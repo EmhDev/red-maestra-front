@@ -1,0 +1,16 @@
+{
+  "name": "front-web-RedMaestra",
+  "version": "6.0.0",
+  "description": "Portal Web Oficial de RedMaestra v5 — Showcase, Mapa en Vivo, Registro de Cuenta, Configuración de Pago (Crédito/Débito) y Recuperación de Contraseña sincronizado con la App Android via NoSQL DB.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": [
+    "RedMaestra",
+    "marketplace",
+    "nosql",
+    "android-sync"
+  ],
+  "license": "UNLICENSED"
+}

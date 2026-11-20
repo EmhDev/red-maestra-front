@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RedMaestra v6.0 — Plataforma de Servicios Profesionales</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+
+  <!-- TOP NAVBAR -->
+  <header class="navbar rm-header">
+    <div class="nav-container">
+      <a href="#home" class="brand" onclick="switchView('home'); return false;">
+        <span class="brand-badge" style="background: linear-gradient(135deg, #3b82f6, #6366f1); display:inline-flex; align-items:center; justify-content:center; width:36px; height:36px; border-radius:10px;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="3"/><circle cx="5" cy="19" r="3"/><circle cx="19" cy="19" r="3"/><line x1="10.5" y1="7.5" x2="6.5" y2="16.5"/><line x1="13.5" y1="7.5" x2="17.5" y2="16.5"/><line x1="8" y1="19" x2="16" y2="19"/></svg>
+        </span>
+        <span style="color:#ffffff; font-weight:800;">RedMaestra</span>
+        <span class="brand-version">v6.0</span>
+      </a>
+
+      <nav class="nav-links">
+        <button class="nav-tab active" data-view="home" onclick="switchView('home')">Inicio</button>
+        <button class="nav-tab" data-view="register" onclick="switchView('register')">Registro</button>
+        <button class="nav-tab" data-view="account" id="nav-account-tab" style="display: none;" onclick="switchView('account')">Mi Cuenta</button>
+      </nav>
+
+      <div class="nav-actions">
+        <a href="/download/RedMaestra_v5-demo.apk" class="btn btn-gold" style="padding: 8px 14px; font-size: 0.84rem; display:inline-flex; align-items:center; gap:6px;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Descargar APK
+        </a>
+        <button type="button" class="btn" onclick="document.getElementById('release-notes-modal').style.display='flex'" style="padding: 8px 12px; font-size: 0.82rem; background: rgba(255,255,255,0.12); color:#ffffff; border: 1px solid rgba(255,255,255,0.2); border-radius:8px; cursor:pointer;">
+          Notas de versión
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="main-container">
+
+    <!-- =================================================================== -->
+    <!-- 1. VISTA PRINCIPAL: CONOCE LA APP, MAPA EN VIVO & PLANES            -->
+    <!-- =================================================================== -->
+    <section id="view-home" class="view-section active">
+      <!-- CARRUSEL DE PROFESIONALES -->
+      <div class="rm-carousel" id="rm-carousel" style="margin-bottom: 24px; border-radius: 18px; overflow: hidden; position: relative; height: 300px; box-shadow: 0 12px 32px rgba(15,23,42,0.12);">
+        <div class="rm-slide active" style="position:absolute; inset:0; background: linear-gradient(90deg, rgba(15,23,42,0.82) 0%, rgba(15,23,42,0.35) 100%), url('https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1400&q=80') center/cover; display:flex; align-items:center; padding: 36px; color:#fff;">
+          <div style="max-width: 540px;">
+            <h2 style="font-size: 1.9rem; font-weight: 800; margin: 0 0 10px 0;">Conecta con profesionales felices y verificados</h2>
+            <p style="margin: 0; font-size: 1rem; opacity: 0.92;">Encuentra especialistas cerca de ti en segundos con RedMaestra.</p>
+          </div>
+        </div>
+        <div class="rm-slide" style="position:absolute; inset:0; background: linear-gradient(90deg, rgba(15,23,42,0.82) 0%, rgba(15,23,42,0.35) 100%), url('https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=1400&q=80') center/cover; display:none; align-items:center; padding: 36px; color:#fff;">
+          <div style="max-width: 540px;">
+            <h2 style="font-size: 1.9rem; font-weight: 800; margin: 0 0 10px 0;">Impulsa tu carrera independiente</h2>
+            <p style="margin: 0; font-size: 1rem; opacity: 0.92;">Publica tus servicios, gestiona clientes y recibe pagos seguros.</p>
+          </div>
+        </div>
+        <div class="rm-slide" style="position:absolute; inset:0; background: linear-gradient(90deg, rgba(15,23,42,0.82) 0%, rgba(15,23,42,0.35) 100%), url('https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&w=1400&q=80') center/cover; display:none; align-items:center; padding: 36px; color:#fff;">
+          <div style="max-width: 540px;">
+            <h2 style="font-size: 1.9rem; font-weight: 800; margin: 0 0 10px 0;">Calidad garantizada en cada servicio</h2>
+            <p style="margin: 0; font-size: 1rem; opacity: 0.92;">Reseñas reales, geolocalización en vivo y soporte directo.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-grid">
+        <div>
+          <h1 class="hero-title">
+            Encuentra o publica servicios profesionales con <span>Geolocalización Real y Pago Seguro</span>
+          </h1>
+          <p class="hero-subtitle">
+            Crea tu cuenta aquí en la Web o en la aplicación Android <strong>RedMaestra v5</strong>.
+            Tu perfil, ficha profesional, dirección en el mapa y medio de pago (<strong>Crédito o Débito</strong>)
+            quedan guardados en la Base de Datos NoSQL compartida para acceder desde cualquier dispositivo.
+          </p>
+
+          <div class="hero-cta-group">
+            <button class="btn btn-primary" onclick="switchView('register')">
+              ✨ Crear Cuenta Ahora (Sincronizada con App)
+            </button>
+            <button class="btn btn-outline" onclick="switchView('account')">
+              💳 Configurar Mi Cuenta y Pago
+            </button>
+            <a href="/download/RedMaestra_v5-demo.apk" class="btn btn-gold">
+              📥 Descargar RedMaestra_v5-demo.apk
+            </a>
+          </div>
+
+          <div class="hero-stats">
+            <div class="stat-box">
+              <div class="stat-value" id="stat-total-pros">3+</div>
+              <div class="stat-label">Profesionales en BD NoSQL</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-value">100%</div>
+              <div class="stat-label">Sincronizado Web + Android</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-value">4% - 15%</div>
+              <div class="stat-label">Comisión Transparente (FREE/PRO/ELITE)</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mockup interactivo de la App Android v5 -->
+        <div class="phone-mockup">
+          <div class="phone-header">
+            <div>
+              <div style="font-weight: 800; font-size: 1.05rem;">🔨 RedMaestra Android v5</div>
+              <div style="font-size: 0.75rem; color: #DBEAFE;">Dark Slate UI • OpenStreetMap • Pagos PCI</div>
+            </div>
+            <span class="tier-badge tier-ELITE">LIVE DB</span>
+          </div>
+
+          <div class="phone-card">
+            <div style="font-size: 0.75rem; color: #FBBF24; font-weight: 800; margin-bottom: 4px;">
+              🔄 MISMA CUENTA EN WEB Y ANDROID
+            </div>
+            <div style="font-size: 0.86rem; color: #E2E8F0;">
+              Regístrate en esta página web con tu correo, RUT/DNI, dirección y tarjeta
+              <strong>Crédito o Débito</strong>. Abre el APK en tu celular e inicia sesión con los mismos datos.
+            </div>
+          </div>
+
+          <div class="phone-card" id="mockup-active-user-box">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <div style="font-size: 0.75rem; color: #94A3B8;">Sesión Web Actual</div>
+                <div style="font-weight: 800; font-size: 0.96rem;" id="mockup-user-name">Sin sesión iniciada</div>
+                <div style="font-size: 0.8rem; color: #60A5FA;" id="mockup-user-role">Inicia sesión o regístrate para sincronizar</div>
+              </div>
+              <button class="btn btn-primary" style="padding: 7px 12px; font-size: 0.78rem;" onclick="switchView('login')">
+                Entrar
+              </button>
+            </div>
+          </div>
+
+          <div class="phone-card" style="background: linear-gradient(135deg, #1E3A8A, #0F172A); border-color: #3B82F6;">
+            <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: #93C5FD;">
+              <span id="mockup-card-type">💳 TARJETA CRÉDITO / DÉBITO</span>
+              <span id="mockup-card-brand">VISA / REDCOMPRA</span>
+            </div>
+            <div style="font-family: monospace; font-size: 1.05rem; font-weight: 800; margin: 8px 0; letter-spacing: 0.08em;" id="mockup-card-number">
+              •••• •••• •••• 4242
+            </div>
+            <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: #CBD5E1;">
+              <span id="mockup-card-holder">CONFIGURABLE EN TU CUENTA</span>
+              <span id="mockup-card-bank">Banco / Emisor</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MAPA EN VIVO CON LOS PROFESIONALES DE LA BASE DE DATOS NOSQL -->
+      <div class="section-card">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">🗺️ Mapa en Vivo de Profesionales (Base de Datos NoSQL)</h2>
+            <p class="section-subtitle">
+              Muestra los 3 profesionales semilla y cualquier nuevo profesional que se registre desde la Web o la App Android con dirección cercana.
+            </p>
+          </div>
+          <div style="display: flex; gap: 10px;">
+            <button class="btn btn-outline" onclick="refreshNoSqlSnapshot()">🔄 Actualizar desde BD</button>
+            <button class="btn btn-primary" onclick="openRegisterAsProfessional()">🛠️ Publicar Mi Ficha en el Mapa</button>
+          </div>
+        </div>
+
+        <div class="map-layout">
+          <div id="live-osm-map"></div>
+          <div class="pro-list-container" id="live-pro-list">
+            <!-- Renderizado dinámicamente desde la BD NoSQL -->
+          </div>
+        </div>
+      </div>
+
+      <!-- PLANES Y MEMBRESÍAS -->
+      <div class="section-card">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">💎 Planes para Profesionales y Simulador de Comisiones</h2>
+            <p class="section-subtitle">
+              Configura tu tarjeta de Crédito o Débito en tu cuenta y elige el nivel de visibilidad ideal para tus servicios.
+            </p>
+          </div>
+        </div>
+
+        <div class="plans-grid">
+          <div class="plan-card">
+            <span class="tier-badge tier-FREE">PLAN FREE</span>
+            <h3 style="font-size: 1.5rem; margin: 10px 0 4px;">$0 <span style="font-size: 0.85rem; color: #94A3B8;">/ mes</span></h3>
+            <p style="color: #FBBF24; font-weight: 700; font-size: 0.9rem; margin-bottom: 12px;">Comisión por trabajo: 15%</p>
+            <p style="color: #94A3B8; font-size: 0.88rem; margin-bottom: 16px;">
+              Ideal para comenzar a publicar tu ficha profesional y recibir solicitudes geolocalizadas en tu comuna.
+            </p>
+            <button class="btn btn-outline btn-full" onclick="openRegisterWithTier('FREE')">Elegir Plan FREE</button>
+          </div>
+
+          <div class="plan-card featured">
+            <span class="tier-badge tier-PRO">⭐ PLAN PRO (RECOMENDADO)</span>
+            <h3 style="font-size: 1.5rem; margin: 10px 0 4px;">$9.990 <span style="font-size: 0.85rem; color: #94A3B8;">CLP / mes</span></h3>
+            <p style="color: #60A5FA; font-weight: 700; font-size: 0.9rem; margin-bottom: 12px;">Comisión reducida: 8%</p>
+            <p style="color: #CBD5E1; font-size: 0.88rem; margin-bottom: 16px;">
+              Posicionamiento prioritario en el mapa, insignia verificada PRO y cobro directo con tarjeta de Crédito o Débito.
+            </p>
+            <button class="btn btn-primary btn-full" onclick="openRegisterWithTier('PRO')">Elegir Plan PRO</button>
+          </div>
+
+          <div class="plan-card">
+            <span class="tier-badge tier-ELITE">👑 PLAN ELITE</span>
+            <h3 style="font-size: 1.5rem; margin: 10px 0 4px;">$19.990 <span style="font-size: 0.85rem; color: #94A3B8;">CLP / mes</span></h3>
+            <p style="color: #10B981; font-weight: 700; font-size: 0.9rem; margin-bottom: 12px;">Comisión mínima: 4%</p>
+            <p style="color: #94A3B8; font-size: 0.88rem; margin-bottom: 16px;">
+              Destacado #1 en búsquedas por cercanía, soporte 24/7 y máxima retención de ganancias en cada servicio.
+            </p>
+            <button class="btn btn-gold btn-full" onclick="openRegisterWithTier('ELITE')">Elegir Plan ELITE</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- 2. VISTA DE REGISTRO DE CUENTA (IDÉNTICA A IMAGEN 1 + PAGO)         -->
+    <!-- =================================================================== -->
+    <section id="view-register" class="view-section">
+      <div class="auth-wrapper">
+        <div class="auth-blue-topbar">
+          <button class="auth-back-link" onclick="switchView('login')">← Login</button>
+          <h2>Crear Cuenta</h2>
+        </div>
+
+        <div class="auth-body">
+          <div id="register-status-banner" class="status-banner"></div>
+
+          <h3 style="font-size: 1.08rem; font-weight: 800; margin-bottom: 10px;">¿Cómo deseas usar RedMaestra?</h3>
+
+          <div class="role-selector-grid">
+            <div class="role-option-card selected" id="reg-role-seeker" onclick="selectRegisterRole('seeker')">
+              <div class="role-option-left">
+                <span class="role-icon">🔍</span>
+                <div>
+                  <div class="role-title">Busco un Profesional</div>
+                  <div class="role-desc">Para personas o empresas que necesitan contratar servicios.</div>
+                </div>
+              </div>
+              <div class="role-check">✓</div>
+            </div>
+
+            <div class="role-option-card" id="reg-role-pro" onclick="selectRegisterRole('professional')">
+              <div class="role-option-left">
+                <span class="role-icon">🛠️</span>
+                <div>
+                  <div class="role-title">Soy un Profesional</div>
+                  <div class="role-desc">Para técnicos y profesores que quieren publicar su ficha.</div>
+                </div>
+              </div>
+              <div class="role-check">✓</div>
+            </div>
+          </div>
+
+          <form id="register-form" onsubmit="handleRegisterSubmit(event)">
+            <div class="gold-section-header">CAMPOS OBLIGATORIOS (*)</div>
+
+            <div class="form-group">
+              <label class="form-label">Nombre Completo *</label>
+              <input type="text" id="reg-fullName" class="form-input" placeholder="Ej: Juan Pérez" required />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Correo Electrónico (Email) *</label>
+              <input type="email" id="reg-email" class="form-input" placeholder="juan.perez@example.com" required />
+            </div>
+
+            <div class="form-grid-2">
+              <div class="form-group">
+                <label class="form-label">RUT o DNI Oficial (1 por cuenta) *</label>
+                <input type="text" id="reg-documentId" class="form-input" placeholder="12.345.678-K / 35.123.456" required />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Teléfono Móvil *</label>
+                <input type="text" id="reg-phone" class="form-input" placeholder="+56 9 8765 4321" required />
+              </div>
+            </div>
+
+            <div class="form-grid-2">
+              <div class="form-group">
+                <label class="form-label">Dirección y Ciudad (Geocodificación en Mapa) *</label>
+                <input type="text" id="reg-address" class="form-input" placeholder="Av. Providencia 1200, Santiago" required />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Nacionalidad</label>
+                <input type="text" id="reg-nationality" class="form-input" value="Chilena" placeholder="Chilena" />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Contraseña (mín 8 car.) *</label>
+              <input type="password" id="reg-password" class="form-input" placeholder="••••••••" minlength="6" required />
+            </div>
+
+            <!-- SECCIÓN EXCLUSIVA PARA PROFESIONALES -->
+            <div id="reg-professional-fields" style="display: none;">
+              <div class="gold-section-header">DATOS DE FICHA PROFESIONAL Y TARIFAS</div>
+
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label class="form-label">Profesión / Especialidad Principal *</label>
+                  <input type="text" id="reg-profession" class="form-input" placeholder="Ej: Electricista SEC / Profesor Matemáticas" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Plan de Membresía</label>
+                  <select id="reg-tier" class="form-select">
+                    <option value="FREE">FREE (Gratis - 15% comisión)</option>
+                    <option value="PRO" selected>PRO ($9.990/mes - 8% comisión)</option>
+                    <option value="ELITE">ELITE ($19.990/mes - 4% comisión)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label class="form-label">Valor por Hora (HH en CLP) *</label>
+                  <input type="number" id="reg-hourlyRate" class="form-input" value="20000" min="1000" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Valor por Visita Técnica (CLP) *</label>
+                  <input type="number" id="reg-visitRate" class="form-input" value="15000" min="1000" />
+                </div>
+              </div>
+
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label class="form-label">Años de Experiencia</label>
+                  <input type="number" id="reg-yearsExp" class="form-input" value="5" min="0" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Habilidades (separadas por coma)</label>
+                  <input type="text" id="reg-skills" class="form-input" placeholder="Certificación SEC, Urgencias 24/7, Garantía" />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Resumen de tu Ficha Profesional</label>
+                <textarea id="reg-bio" class="form-textarea" rows="2" placeholder="Describe tu experiencia, certificaciones y comunas de atención..."></textarea>
+              </div>
+            </div>
+
+            <!-- CONFIGURACIÓN DE MEDIO DE PAGO (OCULTA EN REGISTRO, SOLO EN MI CUENTA) -->
+            <div style="display: none;">
+            <div class="gold-section-header">💳 CONFIGURACIÓN DE PAGO (TARJETA CRÉDITO O DÉBITO)</div>
+            <p style="font-size: 0.83rem; color: #94A3B8; margin-bottom: 10px;">
+              Este medio de pago quedará asociado a tu cuenta y podrás verlo o editarlo tanto en la Web como en la App Android.
+            </p>
+
+            <div class="payment-type-toggle">
+              <button type="button" class="pay-type-btn active-credito" id="reg-pay-credito" onclick="selectRegPaymentType('CREDITO')">
+                💳 Tarjeta de Crédito
+              </button>
+              <button type="button" class="pay-type-btn" id="reg-pay-debito" onclick="selectRegPaymentType('DEBITO')">
+                🏧 Tarjeta de Débito / Redcompra
+              </button>
+            </div>
+
+            <div class="form-grid-2">
+              <div class="form-group">
+                <label class="form-label">Nombre del Titular en la Tarjeta</label>
+                <input type="text" id="reg-cardHolder" class="form-input" placeholder="JUAN PEREZ" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Banco Emisor</label>
+                <select id="reg-cardBank" class="form-select">
+                  <option value="Banco de Chile">Banco de Chile</option>
+                  <option value="BancoEstado">BancoEstado</option>
+                  <option value="Santander">Santander</option>
+                  <option value="BCI">BCI</option>
+                  <option value="Scotiabank">Scotiabank</option>
+                  <option value="Itaú">Itaú</option>
+                  <option value="Falabella">Banco Falabella</option>
+                  <option value="MercadoPago">MercadoPago / Tenpo</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-grid-2">
+              <div class="form-group">
+                <label class="form-label">Número de Tarjeta (se guarda enmascarado PCI)</label>
+                <input type="text" id="reg-cardNumber" class="form-input" placeholder="4532 8910 2345 4242" maxlength="19" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Vencimiento (MM/AA)</label>
+                <input type="text" id="reg-cardExpiry" class="form-input" placeholder="08/28" maxlength="5" />
+              </div>
+            </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-full" id="reg-submit-btn" style="margin-top: 10px;">
+              Crear Cuenta de Búsqueda
+            </button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- 3. VISTA DE INICIO DE SESIÓN (LOGIN CON CUENTAS DE WEB O ANDROID)   -->
+    <!-- =================================================================== -->
+    <section id="view-login" class="view-section">
+      <div class="auth-wrapper" style="max-width: 540px;">
+        <div class="auth-blue-topbar">
+          <h2>🔐 Iniciar Sesión en RedMaestra</h2>
+        </div>
+
+        <div class="auth-body">
+          <div id="login-status-banner" class="status-banner"></div>
+
+          <p style="color: #94A3B8; font-size: 0.9rem; margin-bottom: 18px;">
+            Ingresa con cualquier cuenta creada en esta Web o en la aplicación Android <strong>RedMaestra v5</strong>.
+          </p>
+
+          <form onsubmit="handleLoginSubmit(event)">
+            <div class="form-group">
+              <label class="form-label">Correo Electrónico *</label>
+              <input type="email" id="login-email" class="form-input" placeholder="correo@ejemplo.com" required />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Contraseña *</label>
+              <input type="password" id="login-password" class="form-input" placeholder="••••••••" required />
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; margin-bottom: 16px;">
+              <button type="button" class="auth-back-link" style="color: #60A5FA; font-size: 0.86rem;" onclick="switchView('recover')">
+                🔑 ¿Olvidaste tu contraseña? Recuperar aquí
+              </button>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-full">
+              Ingresar a Mi Cuenta
+            </button>
+          </form>
+
+          <div class="gold-section-header" style="margin-top: 24px;">CUENTAS SEMILLA EN BD PARA PRUEBA RÁPIDA (1 CLIC)</div>
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            <button class="btn btn-outline" style="justify-content: space-between; font-size: 0.82rem;" onclick="fillDemoLogin('carlos.mendoza@RedMaestra.cl', 'Profe1234!')">
+              <span>⚡ Carlos Mendoza (Electricista ELITE)</span>
+              <span style="color: #FBBF24;">carlos.mendoza@RedMaestra.cl</span>
+            </button>
+            <button class="btn btn-outline" style="justify-content: space-between; font-size: 0.82rem;" onclick="fillDemoLogin('valeria.rojas@RedMaestra.cl', 'Profe1234!')">
+              <span>📐 Valeria Rojas (Profesora PRO)</span>
+              <span style="color: #60A5FA;">valeria.rojas@RedMaestra.cl</span>
+            </button>
+            <button class="btn btn-outline" style="justify-content: space-between; font-size: 0.82rem;" onclick="fillDemoLogin('cliente.demo@RedMaestra.cl', 'Cliente123!')">
+              <span>🔍 Camila Fuentes (Cliente Buscador)</span>
+              <span style="color: #34D399;">cliente.demo@RedMaestra.cl</span>
+            </button>
+          </div>
+
+          <div style="text-align: center; margin-top: 20px; padding-top: 16px; border-top: 1px solid #334155;">
+            <span style="color: #94A3B8; font-size: 0.88rem;">¿Aún no tienes cuenta?</span>
+            <button class="auth-back-link" style="color: #FBBF24; margin-left: 6px;" onclick="switchView('register')">
+              Crear Cuenta Nueva →
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- 4. VISTA DE RECUPERACIÓN DE CONTRASEÑA                              -->
+    <!-- =================================================================== -->
+    <section id="view-recover" class="view-section">
+      <div class="auth-wrapper" style="max-width: 540px;">
+        <div class="auth-blue-topbar">
+          <button class="auth-back-link" onclick="switchView('login')">← Volver</button>
+          <h2>🔑 Recuperar Contraseña</h2>
+        </div>
+
+        <div class="auth-body">
+          <div id="recover-status-banner" class="status-banner"></div>
+
+          <p style="color: #94A3B8; font-size: 0.9rem; margin-bottom: 18px;">
+            Valida tu identidad ingresando tu <strong>Correo Electrónico</strong> y el <strong>RUT o DNI Oficial</strong>
+            registrado en tu cuenta. La nueva contraseña se actualizará de inmediato en la Base de Datos NoSQL para Web y Android.
+          </p>
+
+          <form onsubmit="handleRecoverSubmit(event)">
+            <div class="form-group">
+              <label class="form-label">Correo Electrónico Registrado *</label>
+              <input type="email" id="rec-email" class="form-input" placeholder="correo@ejemplo.com" required />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">RUT o DNI Oficial Registrado *</label>
+              <input type="text" id="rec-documentId" class="form-input" placeholder="Ej: 15.432.890-K o 21.334.556-1" required />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Nueva Contraseña (mín. 6 caracteres) *</label>
+              <input type="password" id="rec-newPassword" class="form-input" placeholder="Ingresa tu nueva contraseña" minlength="6" required />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Confirmar Nueva Contraseña *</label>
+              <input type="password" id="rec-confirmPassword" class="form-input" placeholder="Repite tu nueva contraseña" minlength="6" required />
+            </div>
+
+            <button type="submit" class="btn btn-gold btn-full">
+              🔄 Actualizar Contraseña en Base de Datos
+            </button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- 5. PANEL MI CUENTA, FICHA PROFESIONAL & CONFIGURACIÓN DE PAGO       -->
+    <!-- =================================================================== -->
+    <section id="view-account" class="view-section">
+      <div id="account-status-banner" class="status-banner"></div>
+
+      <!-- Aviso si no ha iniciado sesión -->
+      <div id="account-guest-notice" class="section-card" style="text-align: center; padding: 42px 24px; display: none;">
+        <div style="font-size: 2.8rem; margin-bottom: 10px;">🔐</div>
+        <h2 style="font-size: 1.5rem; margin-bottom: 8px;">Inicia sesión o crea tu cuenta para configurar tus datos y medio de pago</h2>
+        <p style="color: #94A3B8; max-width: 560px; margin: 0 auto 22px;">
+          Aquí podrás administrar tus datos personales, tu ficha profesional en el mapa y tu tarjeta de
+          <strong>Crédito o Débito</strong> sincronizada con la aplicación Android.
+        </p>
+        <div style="display: flex; justify-content: center; gap: 12px;">
+          <button class="btn btn-primary" onclick="switchView('login')">Iniciar Sesión</button>
+          <button class="btn btn-gold" onclick="switchView('register')">Crear Cuenta</button>
+        </div>
+      </div>
+
+      <!-- Panel activo cuando el usuario inició sesión -->
+      <div id="account-authenticated-content" style="display: none;">
+        <div class="section-card" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+          <div>
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <h2 class="section-title" id="acc-header-name">Nombre Usuario</h2>
+              <span class="tier-badge tier-PRO" id="acc-header-badge">ROL</span>
+            </div>
+            <p class="section-subtitle" id="acc-header-meta">email@dominio.com • RUT/DNI</p>
+          </div>
+          <div style="display: flex; gap: 10px;">
+            <button class="btn btn-outline" onclick="refreshCurrentAccountFromCloud()">🔄 Sincronizar con App Android</button>
+            <button class="btn btn-danger" onclick="logoutCurrentAccount()">🚪 Cerrar Sesión</button>
+          </div>
+        </div>
+
+        <div class="dashboard-grid">
+          <!-- COLUMNA IZQUIERDA: DATOS DE PERFIL Y FICHA PROFESIONAL -->
+          <div class="section-card">
+            <h3 class="section-title" style="font-size: 1.2rem; margin-bottom: 4px;">👤 Datos de Perfil y Ubicación</h3>
+            <p class="section-subtitle" style="margin-bottom: 16px;">
+              Cualquier cambio guardado aquí se reflejará automáticamente al abrir la App Android.
+            </p>
+
+            <form onsubmit="handleSaveProfileSubmit(event)">
+              <div class="form-group">
+                <label class="form-label">Nombre Completo *</label>
+                <input type="text" id="acc-fullName" class="form-input" required />
+              </div>
+
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label class="form-label">Correo Electrónico (ID Cuenta)</label>
+                  <input type="email" id="acc-email" class="form-input" readonly style="opacity: 0.75;" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">RUT / DNI Oficial</label>
+                  <input type="text" id="acc-documentId" class="form-input" readonly style="opacity: 0.75;" />
+                </div>
+              </div>
+
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label class="form-label">Teléfono de Contacto *</label>
+                  <input type="text" id="acc-phone" class="form-input" required />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Nacionalidad</label>
+                  <input type="text" id="acc-nationality" class="form-input" />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Dirección y Ciudad (se geocodifica en el mapa) *</label>
+                <input type="text" id="acc-address" class="form-input" required />
+                <div style="font-size: 0.76rem; color: #34D399; margin-top: 4px;" id="acc-coords-label">
+                  📍 Coordenadas: -33.4489, -70.6693
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Tipo de Cuenta en RedMaestra</label>
+                <select id="acc-role" class="form-select" onchange="toggleAccountProSection()">
+                  <option value="seeker">🔍 Buscador / Cliente</option>
+                  <option value="professional">🛠️ Profesional (Publica Ficha en el Mapa)</option>
+                </select>
+              </div>
+
+              <!-- Ficha Profesional Editable -->
+              <div id="acc-pro-section" style="display: none; border-top: 1px solid #334155; padding-top: 14px; margin-top: 14px;">
+                <div class="gold-section-header" style="margin-top: 0;">🛠️ FICHA PROFESIONAL EN EL MAPA</div>
+
+                <div class="form-grid-2">
+                  <div class="form-group">
+                    <label class="form-label">Profesión / Especialidad</label>
+                    <input type="text" id="acc-profession" class="form-input" />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Plan Activo</label>
+                    <select id="acc-tier" class="form-select">
+                      <option value="FREE">FREE (15% comisión)</option>
+                      <option value="PRO">PRO (8% comisión)</option>
+                      <option value="ELITE">ELITE (4% comisión)</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="form-grid-2">
+                  <div class="form-group">
+                    <label class="form-label">Tarifa Hora (HH CLP)</label>
+                    <input type="number" id="acc-hourlyRate" class="form-input" />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Tarifa Visita (CLP)</label>
+                    <input type="number" id="acc-visitRate" class="form-input" />
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Habilidades / Certificaciones (separadas por coma)</label>
+                  <input type="text" id="acc-skills" class="form-input" />
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Biografía / Resumen Profesional</label>
+                  <textarea id="acc-bio" class="form-textarea" rows="2"></textarea>
+                </div>
+              </div>
+
+              <button type="submit" class="btn btn-primary btn-full" style="margin-top: 12px;">
+                💾 Guardar Perfil y Ficha en Base de Datos NoSQL
+              </button>
+            </form>
+          </div>
+
+          <!-- COLUMNA DERECHA: CONFIGURACIÓN DE PAGO (CRÉDITO / DÉBITO) Y SEGURIDAD -->
+          <div>
+            <div class="section-card">
+              <h3 class="section-title" style="font-size: 1.2rem; margin-bottom: 4px;">💳 Configuración de Pago (Crédito / Débito)</h3>
+              <p class="section-subtitle">
+                Administra tu tarjeta asociada para cobros y pagos seguros. Sincronizada con la pantalla
+                <strong>"Pagos, Tarjeta & Seguridad"</strong> de la App Android.
+              </p>
+
+              <!-- Tarjeta Bancaria Visual en Vivo -->
+              <div class="visual-bank-card" id="acc-visual-card">
+                <div class="bank-card-top">
+                  <span class="bank-card-type-pill" id="card-preview-type">💳 TARJETA DE CRÉDITO</span>
+                  <span style="font-weight: 900; font-size: 1.05rem; color: #FFFFFF;" id="card-preview-brand">VISA</span>
+                </div>
+                <div class="bank-card-number" id="card-preview-number">•••• •••• •••• 4242</div>
+                <div class="bank-card-bottom">
+                  <div>
+                    <div class="bank-card-meta-label">TITULAR</div>
+                    <div class="bank-card-meta-value" id="card-preview-holder">NOMBRE TITULAR</div>
+                  </div>
+                  <div>
+                    <div class="bank-card-meta-label">VENCE</div>
+                    <div class="bank-card-meta-value" id="card-preview-expiry">08/28</div>
+                  </div>
+                  <div>
+                    <div class="bank-card-meta-label">EMISOR</div>
+                    <div class="bank-card-meta-value" id="card-preview-bank">Banco de Chile</div>
+                  </div>
+                </div>
+              </div>
+
+              <form onsubmit="handleSavePaymentSubmit(event)">
+                <label class="form-label">Selecciona el Tipo de Pago *</label>
+                <div class="payment-type-toggle">
+                  <button type="button" class="pay-type-btn active-credito" id="acc-pay-credito" onclick="selectAccPaymentType('CREDITO')">
+                    💳 Tarjeta de Crédito
+                  </button>
+                  <button type="button" class="pay-type-btn" id="acc-pay-debito" onclick="selectAccPaymentType('DEBITO')">
+                    🏧 Tarjeta de Débito / Redcompra
+                  </button>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Nombre del Titular (como aparece en la tarjeta) *</label>
+                  <input type="text" id="acc-cardHolder" class="form-input" placeholder="JUAN PEREZ" oninput="updateLiveCardPreview()" required />
+                </div>
+
+                <div class="form-grid-2">
+                  <div class="form-group">
+                    <label class="form-label">Número de Tarjeta (16 dígitos) *</label>
+                    <input type="text" id="acc-cardNumber" class="form-input" placeholder="4532 •••• •••• 4242" maxlength="19" oninput="updateLiveCardPreview()" required />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Marca / Red</label>
+                    <select id="acc-cardBrand" class="form-select" onchange="updateLiveCardPreview()">
+                      <option value="VISA">VISA</option>
+                      <option value="MASTERCARD">MASTERCARD</option>
+                      <option value="REDCOMPRA">REDCOMPRA</option>
+                      <option value="AMEX">AMEX</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="form-grid-2">
+                  <div class="form-group">
+                    <label class="form-label">Fecha de Vencimiento (MM/AA) *</label>
+                    <input type="text" id="acc-cardExpiry" class="form-input" placeholder="08/28" maxlength="5" oninput="updateLiveCardPreview()" required />
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Banco Emisor *</label>
+                    <select id="acc-cardBank" class="form-select" onchange="updateLiveCardPreview()">
+                      <option value="Banco de Chile">Banco de Chile</option>
+                      <option value="BancoEstado">BancoEstado</option>
+                      <option value="Santander">Santander</option>
+                      <option value="BCI">BCI</option>
+                      <option value="Scotiabank">Scotiabank</option>
+                      <option value="Itaú">Itaú</option>
+                      <option value="Falabella">Banco Falabella</option>
+                      <option value="MercadoPago">MercadoPago / Tenpo</option>
+                    </select>
+                  </div>
+                </div>
+
+                <button type="submit" class="btn btn-gold btn-full">
+                  💳 Guardar Configuración de Pago en Base de Datos
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER REDMARSTRA -->
+  <footer class="rm-footer" style="background: #0f172a; color: #e2e8f0; padding: 36px 24px; margin-top: 48px; border-top: 1px solid rgba(255,255,255,0.08);">
+    <div style="max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+      <div>
+        <strong style="font-size: 1.15rem; color: #ffffff;">RedMaestra</strong>
+        <p style="margin: 4px 0 0 0; font-size: 0.85rem; color: #94a3b8;">© 2026 RedMaestra v6.0 — Conectando talento profesional con geolocalización real.</p>
+      </div>
+      <div style="display: flex; align-items: center; gap: 14px;">
+        <a href="https://www.linkedin.com" target="_blank" rel="noopener" title="LinkedIn" style="color: #e2e8f0; display:inline-flex; align-items:center; gap:6px; text-decoration:none; padding:8px 12px; border-radius:8px; background: rgba(255,255,255,0.08);">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/></svg>
+          LinkedIn
+        </a>
+        <button type="button" onclick="document.getElementById('contact-mail-modal').style.display='flex'" title="Enviar Correo" style="color: #e2e8f0; display:inline-flex; align-items:center; gap:6px; border:none; cursor:pointer; padding:8px 12px; border-radius:8px; background: rgba(255,255,255,0.08); font-size: 0.9rem;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          Correo
+        </button>
+      </div>
+    </div>
+  </footer>
+
+  <!-- MODAL NOTAS DE VERSIÓN -->
+  <div id="release-notes-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.65); z-index:9999; align-items:center; justify-content:center; padding:16px;">
+    <div style="background:#ffffff; color:#0f172a; max-width:480px; width:100%; border-radius:16px; padding:24px; box-shadow:0 20px 50px rgba(0,0,0,0.3);">
+      <h3 style="margin:0 0 10px 0;">Notas de Versión — RedMaestra v6.0</h3>
+      <ul style="margin:0 0 18px 18px; line-height:1.6; font-size:0.92rem;">
+        <li>Nueva identidad visual <strong>RedMaestra v6.0</strong> con modo Claro y Nocturno.</li>
+        <li>Integración con <strong>Auth0</strong> (Google, Meta y correo).</li>
+        <li>Sección de pagos habilitada solo dentro de cuentas autenticadas.</li>
+        <li>Subida de foto de perfil sincronizada con el backend.</li>
+      </ul>
+      <button type="button" onclick="document.getElementById('release-notes-modal').style.display='none'" class="btn btn-gold" style="width:100%;">Cerrar</button>
+    </div>
+  </div>
+
+  <!-- MODAL ENVIAR CORREO -->
+  <div id="contact-mail-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.65); z-index:9999; align-items:center; justify-content:center; padding:16px;">
+    <div style="background:#ffffff; color:#0f172a; max-width:460px; width:100%; border-radius:16px; padding:24px; box-shadow:0 20px 50px rgba(0,0,0,0.3);">
+      <h3 style="margin:0 0 12px 0;">Contactar a RedMaestra</h3>
+      <form onsubmit="event.preventDefault(); alert('Mensaje enviado correctamente.'); document.getElementById('contact-mail-modal').style.display='none';">
+        <input type="email" required placeholder="Tu correo electrónico" style="width:100%; padding:10px; margin-bottom:10px; border:1px solid #cbd5e1; border-radius:8px;" />
+        <input type="text" required placeholder="Asunto" style="width:100%; padding:10px; margin-bottom:10px; border:1px solid #cbd5e1; border-radius:8px;" />
+        <textarea required rows="4" placeholder="Escribe tu mensaje..." style="width:100%; padding:10px; margin-bottom:14px; border:1px solid #cbd5e1; border-radius:8px;"></textarea>
+        <div style="display:flex; gap:10px;">
+          <button type="submit" class="btn btn-gold" style="flex:1;">Enviar</button>
+          <button type="button" onclick="document.getElementById('contact-mail-modal').style.display='none'" class="btn" style="flex:1; background:#e2e8f0; color:#0f172a;">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://cdn.auth0.com/js/auth0-spa-js/2.1/auth0-spa-js.production.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/theme-toggle.js"></script>
+  <script src="js/auth0-integration.js"></script>
+</body>
+</html>
