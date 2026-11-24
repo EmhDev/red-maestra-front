@@ -566,18 +566,46 @@
                 </div>
                 <div class="form-group">
                   <label class="form-label">RUT / DNI Oficial</label>
-                  <input type="text" id="acc-documentId" class="form-input" readonly style="opacity: 0.75;" />
+                  <input type="text" id="acc-documentId" class="form-input" placeholder="12.345.678-9" />
                 </div>
               </div>
 
               <div class="form-grid-2">
                 <div class="form-group">
                   <label class="form-label">Teléfono de Contacto *</label>
-                  <input type="text" id="acc-phone" class="form-input" required />
+                  <div style="display: flex; gap: 8px;">
+                    <select id="acc-phone-code" class="form-select" style="width: 118px; flex-shrink: 0;">
+                      <option value="+56" selected>🇨🇱 +56</option>
+                      <option value="+54">🇦🇷 +54</option>
+                      <option value="+51">🇵🇪 +51</option>
+                      <option value="+57">🇨🇴 +57</option>
+                      <option value="+52">🇲🇽 +52</option>
+                      <option value="+58">🇻🇪 +58</option>
+                      <option value="+34">🇪🇸 +34</option>
+                      <option value="+1">🇺🇸 +1</option>
+                    </select>
+                    <input type="tel" id="acc-phone" class="form-input" placeholder="933424227" required />
+                  </div>
                 </div>
                 <div class="form-group">
                   <label class="form-label">Nacionalidad</label>
-                  <input type="text" id="acc-nationality" class="form-input" />
+                  <select id="acc-nationality" class="form-select">
+                    <option value="">Selecciona un país</option>
+                    <option value="Chile">Chile</option>
+                    <option value="Argentina">Argentina</option>
+                    <option value="Perú">Perú</option>
+                    <option value="Colombia">Colombia</option>
+                    <option value="México">México</option>
+                    <option value="Venezuela">Venezuela</option>
+                    <option value="Ecuador">Ecuador</option>
+                    <option value="Bolivia">Bolivia</option>
+                    <option value="Uruguay">Uruguay</option>
+                    <option value="Paraguay">Paraguay</option>
+                    <option value="Brasil">Brasil</option>
+                    <option value="España">España</option>
+                    <option value="Estados Unidos">Estados Unidos</option>
+                    <option value="Otro">Otro</option>
+                  </select>
                 </div>
               </div>
 
@@ -639,19 +667,38 @@
               </div>
 
               <button type="submit" class="btn btn-primary btn-full" style="margin-top: 12px;">
-                💾 Guardar Perfil y Ficha en Base de Datos NoSQL
+                Guardar
               </button>
             </form>
           </div>
 
-          <!-- COLUMNA DERECHA: CONFIGURACIÓN DE PAGO (CRÉDITO / DÉBITO) Y SEGURIDAD -->
+          <!-- COLUMNA DERECHA: SEGURIDAD Y CONFIGURACIÓN DE PAGO PROTEGIDA -->
           <div>
-            <div class="section-card">
-              <h3 class="section-title" style="font-size: 1.2rem; margin-bottom: 4px;">💳 Configuración de Pago (Crédito / Débito)</h3>
-              <p class="section-subtitle">
-                Administra tu tarjeta asociada para cobros y pagos seguros. Sincronizada con la pantalla
-                <strong>"Pagos, Tarjeta & Seguridad"</strong> de la App Android.
+            <div class="section-card" style="margin-bottom: 18px;">
+              <h3 class="section-title" style="font-size: 1.15rem; margin-bottom: 6px;">Seguridad y Contraseña</h3>
+              <p class="section-subtitle" style="margin-bottom: 14px;">
+                Para modificar tu contraseña, te enviaremos un enlace seguro de confirmación a tu correo electrónico.
               </p>
+              <button type="button" id="btn-request-password-change" class="btn btn-outline btn-full">
+                Cambiar Contraseña (Enviar enlace al correo)
+              </button>
+              <p id="password-change-status" style="margin: 8px 0 0 0; font-size: 0.82rem; opacity: 0.85;"></p>
+            </div>
+
+            <div class="section-card">
+              <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap;">
+                <div>
+                  <h3 class="section-title" style="font-size: 1.15rem; margin-bottom: 4px;">Métodos de Pago (Crédito / Débito)</h3>
+                  <p class="section-subtitle" style="margin: 0;">
+                    Sección protegida. Ingresa tu contraseña para visualizar o editar tus tarjetas.
+                  </p>
+                </div>
+                <button type="button" id="btn-unlock-payment" class="btn btn-gold" style="padding: 9px 14px; font-size: 0.84rem;">
+                  Desbloquear Métodos de Pago
+                </button>
+              </div>
+
+              <div id="payment-protected-panel" style="display: none; margin-top: 18px;">
 
               <!-- Tarjeta Bancaria Visual en Vivo -->
               <div class="visual-bank-card" id="acc-visual-card">
@@ -729,9 +776,10 @@
                 </div>
 
                 <button type="submit" class="btn btn-gold btn-full">
-                  💳 Guardar Configuración de Pago en Base de Datos
+                  Guardar
                 </button>
               </form>
+              </div>
             </div>
           </div>
         </div>

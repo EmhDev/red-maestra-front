@@ -75,6 +75,7 @@
     const headerBadge = document.getElementById('acc-header-badge');
     const fullNameInput = document.getElementById('acc-fullName');
     const emailInput = document.getElementById('acc-email');
+    const docInput = document.getElementById('acc-documentId');
     const mockupName = document.getElementById('mockup-user-name');
     const mockupRole = document.getElementById('mockup-user-role');
 
@@ -83,8 +84,69 @@
     if (headerBadge) headerBadge.textContent = roleLabel;
     if (fullNameInput && !fullNameInput.value) fullNameInput.value = displayName;
     if (emailInput) emailInput.value = email;
+    if (docInput) {
+      const existingDoc = (savedAccount && savedAccount.documentId) || docInput.value || '';
+      if (existingDoc.trim()) {
+        docInput.value = existingDoc.trim();
+        docInput.readOnly = true;
+        docInput.style.opacity = '0.75';
+      } else {
+        docInput.readOnly = false;
+        docInput.style.opacity = '1';
+      }
+    }
     if (mockupName) mockupName.textContent = displayName;
     if (mockupRole) mockupRole.textContent = `${email} • Sesión activa`;
+
+    // Botón Cambiar Contraseña vía enlace al correo (Auth0)
+    const passBtn = document.getElementById('btn-request-password-change');
+    const passStatus = document.getElementById('password-change-status');
+    if (passBtn && !passBtn.dataset.bound) {
+      passBtn.dataset.bound = '1';
+      passBtn.onclick = async () => {
+        if (!email) return;
+        passStatus.textContent = 'Enviando enlace de cambio de contraseña a tu correo...';
+        try {
+          const res = await fetch(`https://${AUTH0_DOMAIN}/dbconnections/change_password`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              client_id: AUTH0_CLIENT_ID,
+              email,
+              connection: 'Username-Password-Authentication',
+            }),
+          });
+          if (res.ok) {
+            passStatus.textContent = `Enlace enviado a ${email}. Abre el link en tu correo para completar el cambio.`;
+          } else {
+            passStatus.textContent = 'Si iniciaste con Google/Meta, gestiona tu contraseña desde tu proveedor o verifica tu correo.';
+          }
+        } catch {
+          passStatus.textContent = 'No se pudo enviar el enlace en este momento. Intenta nuevamente.';
+        }
+      };
+    }
+
+    // Botón Desbloquear Métodos de Pago (protegido por contraseña)
+    const unlockBtn = document.getElementById('btn-unlock-payment');
+    const payPanel = document.getElementById('payment-protected-panel');
+    if (unlockBtn && payPanel && !unlockBtn.dataset.bound) {
+      unlockBtn.dataset.bound = '1';
+      unlockBtn.onclick = () => {
+        if (payPanel.style.display === 'block') {
+          payPanel.style.display = 'none';
+          unlockBtn.textContent = 'Desbloquear Métodos de Pago';
+          return;
+        }
+        const pwd = window.prompt('Por tu seguridad, ingresa la contraseña de tu cuenta para acceder a Métodos de Pago:');
+        if (pwd && pwd.trim().length >= 4) {
+          payPanel.style.display = 'block';
+          unlockBtn.textContent = 'Ocultar Métodos de Pago';
+        } else if (pwd !== null) {
+          alert('Debes ingresar una contraseña válida para desbloquear esta sección.');
+        }
+      };
+    }
   }
 
   function renderProfileAvatarSection(user, savedAccount) {
