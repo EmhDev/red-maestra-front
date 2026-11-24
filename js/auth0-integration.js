@@ -93,7 +93,22 @@
 
     const displayName = (savedAccount && savedAccount.fullName) || user.name || 'Usuario RedTecnica';
     const email = (savedAccount && savedAccount.email) || user.email || '';
+    const isVerified = user.email_verified !== false;
     const avatarSrc = (savedAccount && savedAccount.avatarUrl) || user.picture || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(displayName) + '&background=312e81&color=fff';
+
+    if (!isVerified && !document.getElementById('email-verify-banner')) {
+      const warn = document.createElement('div');
+      warn.id = 'email-verify-banner';
+      warn.style.cssText = 'margin-bottom: 16px; padding: 16px 20px; border-radius: 12px; background: rgba(245,158,11,0.14); border: 1px solid rgba(245,158,11,0.45); color: #f59e0b; font-size: 0.9rem; font-weight: 600;';
+      warn.innerHTML = 'Tu correo aún no está verificado. Por favor revisa tu bandeja de entrada y haz clic en el enlace de activación para habilitar tu cuenta y configurar la verificación en 2 pasos (MFA).';
+      authContent.prepend(warn);
+    }
+
+    const verifyBadge = isVerified
+      ? '<span style="font-size:0.72rem; font-weight:700; padding:3px 8px; border-radius:999px; background:rgba(16,185,129,0.15); color:#10b981;">Correo Verificado</span>'
+      : '<span style="font-size:0.72rem; font-weight:700; padding:3px 8px; border-radius:999px; background:rgba(245,158,11,0.18); color:#f59e0b;">Activación Pendiente</span>';
+
+    const mfaBadge = '<span style="font-size:0.72rem; font-weight:700; padding:3px 8px; border-radius:999px; background:rgba(79,70,229,0.16); color:#818cf8;">Protección MFA</span>';
 
     const box = document.createElement('div');
     box.id = 'profile-avatar-box';
@@ -106,7 +121,8 @@
         <div>
           <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
             <h3 style="margin: 0; font-size: 1.2rem; font-weight: 800;">${displayName}</h3>
-            <span style="font-size:0.72rem; font-weight:700; padding:3px 8px; border-radius:999px; background:rgba(16,185,129,0.15); color:#10b981;">Cuenta Verificada</span>
+            ${verifyBadge}
+            ${mfaBadge}
           </div>
           <p style="margin: 4px 0 10px 0; font-size: 0.88rem; opacity: 0.78;">${email}</p>
           <label for="profile-avatar-input" style="display:inline-flex; align-items:center; gap:6px; padding:7px 12px; border-radius:8px; background:#312e81; color:#fff; font-size:0.8rem; font-weight:600; cursor:pointer;">
@@ -218,11 +234,13 @@
     isAuth0LoggedIn = await auth0Client.isAuthenticated();
     const accountTab = document.getElementById('nav-account-tab');
     const registerTab = document.getElementById('nav-register-tab');
+    const loginTab = document.getElementById('nav-login-tab');
 
     guardNavigationWhenLoggedIn();
 
     if (isAuth0LoggedIn) {
       if (registerTab) registerTab.style.display = 'none';
+      if (loginTab) loginTab.style.display = 'none';
       if (accountTab) accountTab.style.display = '';
       currentUser = await auth0Client.getUser();
       const savedAccount = await syncAuth0UserToBackend(currentUser);
@@ -230,6 +248,7 @@
       renderProfileAvatarSection(currentUser, savedAccount);
     } else {
       if (registerTab) registerTab.style.display = '';
+      if (loginTab) loginTab.style.display = '';
       if (accountTab) accountTab.style.display = 'none';
     }
   }

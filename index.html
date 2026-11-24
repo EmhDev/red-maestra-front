@@ -25,6 +25,7 @@
       <nav class="nav-links">
         <button class="nav-tab active" data-view="home" onclick="switchView('home')">Inicio</button>
         <button class="nav-tab" data-view="register" id="nav-register-tab" onclick="switchView('register')">Registro</button>
+        <button class="nav-tab" data-view="login" id="nav-login-tab" onclick="switchView('login')">Iniciar Sesión</button>
         <button class="nav-tab" data-view="account" id="nav-account-tab" style="display: none;" onclick="switchView('account')">Mi Cuenta</button>
       </nav>
 
@@ -141,25 +142,31 @@
         </div>
       </div>
 
-      <!-- MAPA EN VIVO CON LOS PROFESIONALES DE LA BASE DE DATOS NOSQL -->
+      <!-- PROFESIONALES CERCA DE TI (SIN ZOOM ACCIDENTAL AL SCROLLEAR) -->
       <div class="section-card">
         <div class="section-header">
           <div>
-            <h2 class="section-title">🗺️ Mapa en Vivo de Profesionales (Base de Datos NoSQL)</h2>
+            <h2 class="section-title">Profesionales calificados cerca de ti, desde tu celular</h2>
             <p class="section-subtitle">
-              Muestra los 3 profesionales semilla y cualquier nuevo profesional que se registre desde la Web o la App Android con dirección cercana.
+              Encuentra especialistas verificados en tu comuna en segundos, revisa sus evaluaciones y coordina directamente desde la web o la app móvil.
             </p>
           </div>
           <div style="display: flex; gap: 10px;">
-            <button class="btn btn-outline" onclick="refreshNoSqlSnapshot()">🔄 Actualizar desde BD</button>
-            <button class="btn btn-primary" onclick="openRegisterAsProfessional()">🛠️ Publicar Mi Ficha en el Mapa</button>
+            <button class="btn btn-primary" onclick="openRegisterAsProfessional()">Publicar Mi Ficha</button>
           </div>
         </div>
 
         <div class="map-layout">
-          <div id="live-osm-map"></div>
+          <div style="border-radius: 16px; overflow: hidden; position: relative; min-height: 360px; background: linear-gradient(135deg, rgba(15,23,42,0.78) 0%, rgba(49,46,129,0.52) 100%), url('https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?auto=format&fit=crop&w=1200&q=80') center/cover; display: flex; flex-direction: column; justify-content: flex-end; padding: 28px; color: #ffffff;">
+            <span style="display:inline-block; align-self:flex-start; padding:5px 12px; border-radius:999px; background:rgba(59,130,246,0.9); font-size:0.75rem; font-weight:700; margin-bottom:10px;">Cobertura Inteligente</span>
+            <h3 style="margin: 0 0 8px 0; font-size: 1.45rem; font-weight: 800;">Tu técnico ideal, a minutos de tu ubicación</h3>
+            <p style="margin: 0; font-size: 0.92rem; color: #e2e8f0; max-width: 480px;">
+              Busca por especialidad, compara experiencia y agenda con total tranquilidad desde tu teléfono.
+            </p>
+          </div>
+          <div id="live-osm-map" style="display: none;"></div>
           <div class="pro-list-container" id="live-pro-list">
-            <!-- Renderizado dinámicamente desde la BD NoSQL -->
+            <!-- Renderizado dinámicamente -->
           </div>
         </div>
       </div>
