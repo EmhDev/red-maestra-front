@@ -4,7 +4,7 @@ const path = require('path');
 
 const PORT = process.env.PORT || 8080;
 const PUBLIC_DIR = __dirname;
-const APK_PATH = path.resolve(__dirname, '..', 'RedMaestra_v5-demo.apk');
+const APK_PATH = path.resolve(__dirname, '..', 'RedTecnica_v5-demo.apk');
 
 const MIME_TYPES = {
   '.html': 'text/html; charset=utf-8',
@@ -34,13 +34,13 @@ const server = http.createServer((req, res) => {
   let pathname = decodeURIComponent(parsedUrl.pathname);
 
   // Direct APK download endpoint
-  if (pathname === '/download/RedMaestra_v5-demo.apk' || pathname === '/RedMaestra_v5-demo.apk') {
+  if (pathname === '/download/RedTecnica_v5-demo.apk' || pathname === '/RedTecnica_v5-demo.apk') {
     if (fs.existsSync(APK_PATH)) {
       const stat = fs.statSync(APK_PATH);
       res.writeHead(200, {
         'Content-Type': MIME_TYPES['.apk'],
         'Content-Length': stat.size,
-        'Content-Disposition': 'attachment; filename="RedMaestra_v5-demo.apk"',
+        'Content-Disposition': 'attachment; filename="RedTecnica_v5-demo.apk"',
       });
       fs.createReadStream(APK_PATH).pipe(res);
       return;
@@ -86,9 +86,9 @@ const server = http.createServer((req, res) => {
 
 server.listen(PORT, '0.0.0.0', () => {
   console.log(`=============================================================`);
-  console.log(`🌐 RedMaestra v5 Web Portal activo en:`);
+  console.log(`🌐 RedTecnica v5 Web Portal activo en:`);
   console.log(`   👉 Local:   http://localhost:${PORT}`);
   console.log(`   👉 Red LAN: http://192.168.0.11:${PORT}`);
-  console.log(`   📦 APK:     http://localhost:${PORT}/download/RedMaestra_v5-demo.apk`);
+  console.log(`   📦 APK:     http://localhost:${PORT}/download/RedTecnica_v5-demo.apk`);
   console.log(`=============================================================`);
 });

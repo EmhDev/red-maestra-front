@@ -1,13 +1,13 @@
 {
-  "name": "front-web-RedMaestra",
+  "name": "front-web-RedTecnica",
   "version": "6.0.0",
-  "description": "Portal Web Oficial de RedMaestra v5 — Showcase, Mapa en Vivo, Registro de Cuenta, Configuración de Pago (Crédito/Débito) y Recuperación de Contraseña sincronizado con la App Android via NoSQL DB.",
+  "description": "Portal Web Oficial de RedTecnica v5 — Showcase, Mapa en Vivo, Registro de Cuenta, Configuración de Pago (Crédito/Débito) y Recuperación de Contraseña sincronizado con la App Android via NoSQL DB.",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
   },
   "keywords": [
-    "RedMaestra",
+    "RedTecnica",
     "marketplace",
     "nosql",
     "android-sync"

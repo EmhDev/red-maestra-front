@@ -1,27 +1,54 @@
 (function () {
-  const AUTH0_DOMAIN = 'emhdev.us.auth0.com';
-  const AUTH0_CLIENT_ID = 'VlFrSfGOeMsIyaN6mY4CiHRow535qLw2';
-  const BACKEND_API = 'http://localhost:3000/api/v1/nosql';
+  const AUTH0_DOMAIN = window.REDTECNICA_AUTH0_DOMAIN || 'redtecnica.us.auth0.com';
+  const AUTH0_CLIENT_ID = window.REDTECNICA_AUTH0_CLIENT_ID || 'HfnuB7nrbdLDx4mJfii2sdCvIR2iCKHh';
+  const BACKEND_API = window.REDTECNICA_API_URL || 'http://localhost:3000/api/v1/nosql';
 
   let auth0Client = null;
   let currentUser = null;
 
+  async function getBearerHeaders() {
+    const headers = { 'Content-Type': 'application/json' };
+    try {
+      if (auth0Client && (await auth0Client.isAuthenticated())) {
+        const token = await auth0Client.getTokenSilently();
+        if (token) {
+          headers.Authorization = `Bearer ${token}`;
+          return headers;
+        }
+      }
+    } catch {
+      // Fallback a token emitido por backend si no hay audience configurada aún
+    }
+    const localToken = sessionStorage.getItem('redtecnica_jwt');
+    if (localToken) {
+      headers.Authorization = `Bearer ${localToken}`;
+    }
+    return headers;
+  }
+
   async function syncAuth0UserToBackend(user, extraFields = {}) {
     if (!user || !user.sub) return;
     try {
-      await fetch(`${BACKEND_API}/accounts/upsert`, {
+      const headers = await getBearerHeaders();
+      const res = await fetch(`${BACKEND_API}/accounts/upsert`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify({
           id: user.sub,
           email: user.email || '',
-          fullName: user.name || user.nickname || 'Usuario Auth0',
+          fullName: user.name || user.nickname || 'Usuario RedTecnica',
           avatarUrl: extraFields.avatarUrl || user.picture || '',
           authProvider: 'auth0',
           active: true,
           ...extraFields,
         }),
       });
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data.accessToken) {
+          sessionStorage.setItem('redtecnica_jwt', data.accessToken);
+        }
+      }
     } catch (err) {
       console.warn('No se pudo sincronizar usuario Auth0 con backend:', err);
     }
