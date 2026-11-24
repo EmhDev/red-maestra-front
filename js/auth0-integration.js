@@ -1,7 +1,10 @@
 (function () {
   const AUTH0_DOMAIN = window.REDTECNICA_AUTH0_DOMAIN || 'redtecnica.us.auth0.com';
   const AUTH0_CLIENT_ID = window.REDTECNICA_AUTH0_CLIENT_ID || 'HfnuB7nrbdLDx4mJfii2sdCvIR2iCKHh';
-  const BACKEND_API = window.REDTECNICA_API_URL || 'http://localhost:3000/api/v1/nosql';
+  const IS_LOCAL = ['localhost', '127.0.0.1'].includes(window.location.hostname);
+  const BACKEND_API =
+    window.REDTECNICA_API_URL ||
+    (IS_LOCAL ? 'http://localhost:3000/api/v1/nosql' : 'https://redtecnica-backend.onrender.com/api/v1/nosql');
 
   let auth0Client = null;
   let currentUser = null;

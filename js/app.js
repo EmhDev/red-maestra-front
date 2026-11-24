@@ -5,11 +5,17 @@
  */
 
 const API_HOST = window.location.hostname || 'localhost';
-const NOSQL_API_CANDIDATES = [
-  `http://${API_HOST}:3000/api/v1/nosql`,
-  `http://localhost:3000/api/v1/nosql`,
-  `http://192.168.0.11:3000/api/v1/nosql`,
-];
+const IS_LOCAL_HOST = API_HOST === 'localhost' || API_HOST === '127.0.0.1';
+const PROD_BACKEND_API = 'https://redtecnica-backend.onrender.com/api/v1/nosql';
+const NOSQL_API_CANDIDATES = IS_LOCAL_HOST
+  ? [
+      `http://localhost:3000/api/v1/nosql`,
+      PROD_BACKEND_API,
+    ]
+  : [
+      PROD_BACKEND_API,
+      `http://${API_HOST}:3000/api/v1/nosql`,
+    ];
 
 let activeApiBase = NOSQL_API_CANDIDATES[0];
 let currentRegisterRole = 'seeker';
