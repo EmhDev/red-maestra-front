@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>RedTecnica v6.0 — Plataforma de Servicios Profesionales</title>
+  <title>RedTecnica — Plataforma de Servicios Profesionales</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
@@ -20,19 +20,18 @@
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="3"/><circle cx="5" cy="19" r="3"/><circle cx="19" cy="19" r="3"/><line x1="10.5" y1="7.5" x2="6.5" y2="16.5"/><line x1="13.5" y1="7.5" x2="17.5" y2="16.5"/><line x1="8" y1="19" x2="16" y2="19"/></svg>
         </span>
         <span style="color:#ffffff; font-weight:800;">RedTecnica</span>
-        <span class="brand-version">v6.0</span>
       </a>
 
       <nav class="nav-links">
         <button class="nav-tab active" data-view="home" onclick="switchView('home')">Inicio</button>
-        <button class="nav-tab" data-view="register" onclick="switchView('register')">Registro</button>
+        <button class="nav-tab" data-view="register" id="nav-register-tab" onclick="switchView('register')">Registro</button>
         <button class="nav-tab" data-view="account" id="nav-account-tab" style="display: none;" onclick="switchView('account')">Mi Cuenta</button>
       </nav>
 
       <div class="nav-actions">
         <a href="/download/RedTecnica_v5-demo.apk" class="btn btn-gold" style="padding: 8px 14px; font-size: 0.84rem; display:inline-flex; align-items:center; gap:6px;">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          Descargar APK
+          Descargar
         </a>
         <button type="button" class="btn" onclick="document.getElementById('release-notes-modal').style.display='flex'" style="padding: 8px 12px; font-size: 0.82rem; background: rgba(255,255,255,0.12); color:#ffffff; border: 1px solid rgba(255,255,255,0.2); border-radius:8px; cursor:pointer;">
           Notas de versión
@@ -108,50 +107,35 @@
           </div>
         </div>
 
-        <!-- Mockup interactivo de la App Android v5 -->
+        <!-- Mockup interactivo de la App RedTecnica -->
         <div class="phone-mockup">
           <div class="phone-header">
             <div>
-              <div style="font-weight: 800; font-size: 1.05rem;">🔨 RedTecnica Android v5</div>
-              <div style="font-size: 0.75rem; color: #DBEAFE;">Dark Slate UI • OpenStreetMap • Pagos PCI</div>
+              <div style="font-weight: 800; font-size: 1.05rem;">RedTecnica App</div>
+              <div style="font-size: 0.75rem; color: #DBEAFE;">Geolocalización en vivo • Profesionales Verificados</div>
             </div>
-            <span class="tier-badge tier-ELITE">LIVE DB</span>
+            <span class="tier-badge tier-ELITE">ACTIVO</span>
           </div>
 
           <div class="phone-card">
             <div style="font-size: 0.75rem; color: #FBBF24; font-weight: 800; margin-bottom: 4px;">
-              🔄 MISMA CUENTA EN WEB Y ANDROID
+              MISMA CUENTA EN WEB Y MÓVIL
             </div>
             <div style="font-size: 0.86rem; color: #E2E8F0;">
-              Regístrate en esta página web con tu correo, RUT/DNI, dirección y tarjeta
-              <strong>Crédito o Débito</strong>. Abre el APK en tu celular e inicia sesión con los mismos datos.
+              Crea tu cuenta en RedTecnica y accede desde cualquier dispositivo con tu perfil y ubicación sincronizados en tiempo real.
             </div>
           </div>
 
           <div class="phone-card" id="mockup-active-user-box">
             <div style="display: flex; justify-content: space-between; align-items: center;">
               <div>
-                <div style="font-size: 0.75rem; color: #94A3B8;">Sesión Web Actual</div>
+                <div style="font-size: 0.75rem; color: #94A3B8;">Estado de Sesión</div>
                 <div style="font-weight: 800; font-size: 0.96rem;" id="mockup-user-name">Sin sesión iniciada</div>
-                <div style="font-size: 0.8rem; color: #60A5FA;" id="mockup-user-role">Inicia sesión o regístrate para sincronizar</div>
+                <div style="font-size: 0.8rem; color: #60A5FA;" id="mockup-user-role">Inicia sesión o regístrate para comenzar</div>
               </div>
-              <button class="btn btn-primary" style="padding: 7px 12px; font-size: 0.78rem;" onclick="switchView('login')">
+              <button class="btn btn-primary" style="padding: 7px 12px; font-size: 0.78rem;" onclick="switchView('register')">
                 Entrar
               </button>
-            </div>
-          </div>
-
-          <div class="phone-card" style="background: linear-gradient(135deg, #1E3A8A, #0F172A); border-color: #3B82F6;">
-            <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: #93C5FD;">
-              <span id="mockup-card-type">💳 TARJETA CRÉDITO / DÉBITO</span>
-              <span id="mockup-card-brand">VISA / REDCOMPRA</span>
-            </div>
-            <div style="font-family: monospace; font-size: 1.05rem; font-weight: 800; margin: 8px 0; letter-spacing: 0.08em;" id="mockup-card-number">
-              •••• •••• •••• 4242
-            </div>
-            <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: #CBD5E1;">
-              <span id="mockup-card-holder">CONFIGURABLE EN TU CUENTA</span>
-              <span id="mockup-card-bank">Banco / Emisor</span>
             </div>
           </div>
         </div>
@@ -754,7 +738,7 @@
     <div style="max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
       <div>
         <strong style="font-size: 1.15rem; color: #ffffff;">RedTecnica</strong>
-        <p style="margin: 4px 0 0 0; font-size: 0.85rem; color: #94a3b8;">© 2026 RedTecnica v6.0 — Conectando talento profesional con geolocalización real.</p>
+        <p style="margin: 4px 0 0 0; font-size: 0.85rem; color: #94a3b8;">© 2026 RedTecnica — Conectando talento profesional con geolocalización real.</p>
       </div>
       <div style="display: flex; align-items: center; gap: 14px;">
         <a href="https://www.linkedin.com" target="_blank" rel="noopener" title="LinkedIn" style="color: #e2e8f0; display:inline-flex; align-items:center; gap:6px; text-decoration:none; padding:8px 12px; border-radius:8px; background: rgba(255,255,255,0.08);">
@@ -772,12 +756,12 @@
   <!-- MODAL NOTAS DE VERSIÓN -->
   <div id="release-notes-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.65); z-index:9999; align-items:center; justify-content:center; padding:16px;">
     <div style="background:#ffffff; color:#0f172a; max-width:480px; width:100%; border-radius:16px; padding:24px; box-shadow:0 20px 50px rgba(0,0,0,0.3);">
-      <h3 style="margin:0 0 10px 0;">Notas de Versión — RedTecnica v6.0</h3>
+      <h3 style="margin:0 0 10px 0;">Notas de Versión — RedTecnica</h3>
       <ul style="margin:0 0 18px 18px; line-height:1.6; font-size:0.92rem;">
-        <li>Nueva identidad visual <strong>RedTecnica v6.0</strong> con modo Claro y Nocturno.</li>
-        <li>Integración con <strong>Auth0</strong> (Google, Meta y correo).</li>
-        <li>Sección de pagos habilitada solo dentro de cuentas autenticadas.</li>
-        <li>Subida de foto de perfil sincronizada con el backend.</li>
+        <li>Se mejoró la seguridad y protección de los datos de los usuarios.</li>
+        <li>Nuevo diseño moderno con modo Claro y modo Nocturno.</li>
+        <li>Ahora puedes personalizar tu perfil agregando tu foto de perfil.</li>
+        <li>Los medios de pago ahora se gestionan de forma privada únicamente dentro de tu cuenta.</li>
       </ul>
       <button type="button" onclick="document.getElementById('release-notes-modal').style.display='none'" class="btn btn-gold" style="width:100%;">Cerrar</button>
     </div>

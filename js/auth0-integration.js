@@ -8,6 +8,7 @@
 
   let auth0Client = null;
   let currentUser = null;
+  let isAuth0LoggedIn = false;
 
   async function getBearerHeaders() {
     const headers = { 'Content-Type': 'application/json' };
@@ -20,7 +21,7 @@
         }
       }
     } catch {
-      // Fallback a token emitido por backend si no hay audience configurada aún
+      // Fallback a token emitido por backend
     }
     const localToken = sessionStorage.getItem('redtecnica_jwt');
     if (localToken) {
@@ -30,7 +31,7 @@
   }
 
   async function syncAuth0UserToBackend(user, extraFields = {}) {
-    if (!user || !user.sub) return;
+    if (!user || !user.sub) return null;
     try {
       const headers = await getBearerHeaders();
       const res = await fetch(`${BACKEND_API}/accounts/upsert`, {
@@ -51,34 +52,80 @@
         if (data && data.accessToken) {
           sessionStorage.setItem('redtecnica_jwt', data.accessToken);
         }
+        return data.account || null;
       }
     } catch (err) {
-      console.warn('No se pudo sincronizar usuario Auth0 con backend:', err);
+      console.warn('No se pudo sincronizar usuario con backend:', err);
     }
+    return null;
   }
 
-  function renderProfileAvatarSection(user) {
-    const accountView = document.getElementById('view-account');
-    if (!accountView || document.getElementById('profile-avatar-box')) return;
+  function applyLoggedInStateToAccountView(user, savedAccount) {
+    const guestNotice = document.getElementById('account-guest-notice');
+    const authContent = document.getElementById('account-authenticated-content');
+    if (guestNotice) guestNotice.style.display = 'none';
+    if (authContent) authContent.style.display = 'block';
+
+    const displayName = (savedAccount && savedAccount.fullName) || user.name || user.nickname || 'Usuario RedTecnica';
+    const email = (savedAccount && savedAccount.email) || user.email || '';
+    const roleLabel = (savedAccount && savedAccount.role === 'professional') ? 'PROFESIONAL' : 'USUARIO';
+
+    const headerName = document.getElementById('acc-header-name');
+    const headerMeta = document.getElementById('acc-header-meta');
+    const headerBadge = document.getElementById('acc-header-badge');
+    const fullNameInput = document.getElementById('acc-fullName');
+    const emailInput = document.getElementById('acc-email');
+    const mockupName = document.getElementById('mockup-user-name');
+    const mockupRole = document.getElementById('mockup-user-role');
+
+    if (headerName) headerName.textContent = displayName;
+    if (headerMeta) headerMeta.textContent = email;
+    if (headerBadge) headerBadge.textContent = roleLabel;
+    if (fullNameInput && !fullNameInput.value) fullNameInput.value = displayName;
+    if (emailInput) emailInput.value = email;
+    if (mockupName) mockupName.textContent = displayName;
+    if (mockupRole) mockupRole.textContent = `${email} • Sesión activa`;
+  }
+
+  function renderProfileAvatarSection(user, savedAccount) {
+    const authContent = document.getElementById('account-authenticated-content');
+    if (!authContent || document.getElementById('profile-avatar-box')) return;
+
+    const displayName = (savedAccount && savedAccount.fullName) || user.name || 'Usuario RedTecnica';
+    const email = (savedAccount && savedAccount.email) || user.email || '';
+    const avatarSrc = (savedAccount && savedAccount.avatarUrl) || user.picture || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(displayName) + '&background=312e81&color=fff';
 
     const box = document.createElement('div');
     box.id = 'profile-avatar-box';
-    box.className = 'card';
-    box.style.cssText = 'margin-bottom: 20px; padding: 20px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap;';
+    box.className = 'section-card';
+    box.style.cssText = 'margin-bottom: 20px; padding: 24px; display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap;';
     box.innerHTML = `
-      <img id="profile-avatar-preview" src="${user.picture || 'https://via.placeholder.com/72'}" alt="Foto de perfil"
-           style="width: 72px; height: 72px; border-radius: 50%; object-fit: cover; border: 2px solid #635bff;" />
-      <div style="flex: 1; min-width: 200px;">
-        <h3 style="margin: 0 0 6px 0;">Foto de Perfil</h3>
-        <input type="file" id="profile-avatar-input" accept="image/*" style="font-size: 0.85rem;" />
-        <p id="profile-avatar-status" style="margin: 6px 0 0 0; font-size: 0.8rem; opacity: 0.8;"></p>
+      <div style="display: flex; align-items: center; gap: 18px; flex-wrap: wrap;">
+        <img id="profile-avatar-preview" src="${avatarSrc}" alt="Foto de perfil"
+             style="width: 76px; height: 76px; border-radius: 50%; object-fit: cover; border: 3px solid #4f46e5; box-shadow: 0 4px 14px rgba(79,70,229,0.25);" />
+        <div>
+          <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+            <h3 style="margin: 0; font-size: 1.2rem; font-weight: 800;">${displayName}</h3>
+            <span style="font-size:0.72rem; font-weight:700; padding:3px 8px; border-radius:999px; background:rgba(16,185,129,0.15); color:#10b981;">Cuenta Verificada</span>
+          </div>
+          <p style="margin: 4px 0 10px 0; font-size: 0.88rem; opacity: 0.78;">${email}</p>
+          <label for="profile-avatar-input" style="display:inline-flex; align-items:center; gap:6px; padding:7px 12px; border-radius:8px; background:#312e81; color:#fff; font-size:0.8rem; font-weight:600; cursor:pointer;">
+            Cambiar foto de perfil
+          </label>
+          <input type="file" id="profile-avatar-input" accept="image/*" style="display:none;" />
+          <span id="profile-avatar-status" style="margin-left: 10px; font-size: 0.8rem; opacity: 0.85;"></span>
+        </div>
       </div>
+      <button type="button" id="profile-logout-btn" class="btn btn-danger" style="padding: 9px 16px; font-size: 0.85rem; border-radius: 8px; cursor: pointer;">
+        Cerrar Sesión
+      </button>
     `;
-    accountView.prepend(box);
+    authContent.prepend(box);
 
     const input = document.getElementById('profile-avatar-input');
     const preview = document.getElementById('profile-avatar-preview');
     const status = document.getElementById('profile-avatar-status');
+    const logoutBtn = document.getElementById('profile-logout-btn');
 
     input.addEventListener('change', (e) => {
       const file = e.target.files && e.target.files[0];
@@ -87,31 +134,30 @@
       reader.onload = async () => {
         const dataUrl = reader.result;
         preview.src = dataUrl;
-        status.textContent = 'Guardando foto en perfil...';
+        status.textContent = 'Guardando...';
         await syncAuth0UserToBackend(currentUser, { avatarUrl: dataUrl });
-        status.textContent = '✅ Foto de perfil actualizada.';
+        status.textContent = 'Foto actualizada';
       };
       reader.readAsDataURL(file);
     });
+
+    if (logoutBtn) {
+      logoutBtn.onclick = () => performFullLogout();
+    }
   }
 
-  function ensureSocialButton(id, label, bg, connection) {
-    const navActions = document.querySelector('.nav-actions');
-    if (!navActions) return null;
-    let btn = document.getElementById(id);
-    if (!btn) {
-      btn = document.createElement('button');
-      btn.id = id;
-      btn.className = 'btn';
-      btn.style.cssText = `padding: 8px 12px; font-size: 0.82rem; background: ${bg}; color: #fff; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;`;
-      btn.textContent = label;
-      btn.onclick = () =>
-        auth0Client.loginWithRedirect({
-          authorizationParams: connection ? { connection } : undefined,
-        });
-      navActions.appendChild(btn);
+  function performFullLogout() {
+    sessionStorage.removeItem('redtecnica_jwt');
+    try {
+      localStorage.removeItem('profesearch_active_account');
+    } catch {}
+    if (auth0Client && isAuth0LoggedIn) {
+      auth0Client.logout({
+        logoutParams: { returnTo: window.location.origin },
+      });
+    } else {
+      window.location.reload();
     }
-    return btn;
   }
 
   function renderRegisterSocialButtons() {
@@ -128,8 +174,8 @@
       <button type="button" id="reg-meta-btn" style="width:100%; padding:11px 14px; border-radius:8px; border:none; background:#1877f2; color:#ffffff; font-weight:600; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;">
         <span>f</span> Continuar con Meta
       </button>
-      <button type="button" id="reg-auth0-btn" style="width:100%; padding:11px 14px; border-radius:8px; border:none; background:#635bff; color:#ffffff; font-weight:600; cursor:pointer;">
-        🛡️ Entrar / Registrarse con Auth0
+      <button type="button" id="reg-auth0-btn" style="width:100%; padding:11px 14px; border-radius:8px; border:none; background:#312e81; color:#ffffff; font-weight:600; cursor:pointer;">
+        Iniciar Sesión / Registrarse con Correo
       </button>
     `;
     regForm.parentNode.insertBefore(box, regForm);
@@ -142,19 +188,48 @@
       auth0Client.loginWithRedirect();
   }
 
+  function guardNavigationWhenLoggedIn() {
+    if (typeof window.switchView === 'function' && !window._rtSwitchViewWrapped) {
+      const originalSwitchView = window.switchView;
+      window.switchView = function (viewName) {
+        if (isAuth0LoggedIn && (viewName === 'register' || viewName === 'login')) {
+          originalSwitchView('account');
+          applyLoggedInStateToAccountView(currentUser, null);
+          return;
+        }
+        originalSwitchView(viewName);
+        if (isAuth0LoggedIn && viewName === 'account') {
+          applyLoggedInStateToAccountView(currentUser, null);
+        }
+      };
+      window._rtSwitchViewWrapped = true;
+    }
+
+    if (typeof window.logoutCurrentAccount === 'function' && !window._rtLogoutWrapped) {
+      window.logoutCurrentAccount = performFullLogout;
+      window._rtLogoutWrapped = true;
+    }
+  }
+
   async function updateAuth0UI() {
     if (!auth0Client) return;
 
     renderRegisterSocialButtons();
-    const isAuthenticated = await auth0Client.isAuthenticated();
+    isAuth0LoggedIn = await auth0Client.isAuthenticated();
     const accountTab = document.getElementById('nav-account-tab');
+    const registerTab = document.getElementById('nav-register-tab');
 
-    if (isAuthenticated) {
+    guardNavigationWhenLoggedIn();
+
+    if (isAuth0LoggedIn) {
+      if (registerTab) registerTab.style.display = 'none';
       if (accountTab) accountTab.style.display = '';
       currentUser = await auth0Client.getUser();
-      await syncAuth0UserToBackend(currentUser);
-      renderProfileAvatarSection(currentUser);
+      const savedAccount = await syncAuth0UserToBackend(currentUser);
+      applyLoggedInStateToAccountView(currentUser, savedAccount);
+      renderProfileAvatarSection(currentUser, savedAccount);
     } else {
+      if (registerTab) registerTab.style.display = '';
       if (accountTab) accountTab.style.display = 'none';
     }
   }
@@ -173,13 +248,18 @@
         },
       });
 
-      if (window.location.search.includes('code=') && window.location.search.includes('state=')) {
+      const returnedFromLogin =
+        window.location.search.includes('code=') && window.location.search.includes('state=');
+      if (returnedFromLogin) {
         await auth0Client.handleRedirectCallback();
         window.history.replaceState({}, document.title, window.location.pathname);
       }
 
       await updateAuth0UI();
-      window.profeSearchAuth0 = auth0Client;
+      if (returnedFromLogin && isAuth0LoggedIn && typeof window.switchView === 'function') {
+        window.switchView('account');
+      }
+      window.redTecnicaAuth0 = auth0Client;
     } catch (err) {
       console.error('Error inicializando Auth0:', err);
     }

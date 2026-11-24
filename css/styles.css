@@ -824,3 +824,16 @@ body:not(.theme-dark) .rm-header {
   opacity: 1;
   pointer-events: auto;
 }
+
+
+/* === Header transparente progresivo al hacer scroll === */
+.rm-header {
+  transition: background 0.35s ease, backdrop-filter 0.35s ease, box-shadow 0.35s ease !important;
+}
+.rm-header.rm-scrolled,
+body:not(.theme-dark) .rm-header.rm-scrolled {
+  background: rgba(30, 27, 75, 0.72) !important;
+  backdrop-filter: blur(14px) !important;
+  -webkit-backdrop-filter: blur(14px) !important;
+  box-shadow: 0 8px 28px rgba(15, 23, 42, 0.18) !important;
+}

@@ -28,6 +28,23 @@
 
     applyTheme(isDark);
 
+    // Header progresivamente transparente al hacer scroll
+    const header = document.querySelector('.rm-header');
+    if (header) {
+      const onScroll = () => {
+        const y = window.scrollY || 0;
+        header.classList.toggle('rm-scrolled', y > 24);
+        if (y > 24) {
+          const alpha = Math.max(0.55, 0.92 - Math.min(y, 300) / 800);
+          header.style.setProperty('background', `rgba(30, 27, 75, ${alpha.toFixed(2)})`, 'important');
+        } else {
+          header.style.removeProperty('background');
+        }
+      };
+      window.addEventListener('scroll', onScroll, { passive: true });
+      onScroll();
+    }
+
     // Carrusel automático con transición suave
     const slides = document.querySelectorAll('#rm-carousel .rm-slide');
     if (slides.length > 1) {
