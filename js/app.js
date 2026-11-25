@@ -172,19 +172,82 @@ async function geocodeAddress(address) {
 }
 
 // ============================================================================
+// VALIDADOR Y FORMATEADOR DE RUT CHILENO (MÓDULO 11)
+// ============================================================================
+function normalizeChileanRut(rut) {
+  return String(rut || '').replace(/\./g, '').replace(/-/g, '').replace(/\s+/g, '').trim().toUpperCase();
+}
+
+function validateChileanRut(rut) {
+  const clean = normalizeChileanRut(rut);
+  if (clean.length < 7 || clean.length > 9) return false;
+  const body = clean.slice(0, -1);
+  const dv = clean.slice(-1);
+  if (!/^\d+$/.test(body) || !/^[0-9K]$/.test(dv)) return false;
+
+  let sum = 0;
+  let multiplier = 2;
+  for (let i = body.length - 1; i >= 0; i--) {
+    sum += Number(body[i]) * multiplier;
+    multiplier = multiplier === 7 ? 2 : multiplier + 1;
+  }
+  const mod = 11 - (sum % 11);
+  const expectedDv = mod === 11 ? '0' : mod === 10 ? 'K' : String(mod);
+  return dv === expectedDv;
+}
+
+function formatChileanRut(rut) {
+  const clean = normalizeChileanRut(rut);
+  if (clean.length < 2) return clean;
+  const body = clean.slice(0, -1);
+  const dv = clean.slice(-1);
+  const formattedBody = body.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  return `${formattedBody}-${dv}`;
+}
+
+function attachRutLiveValidation(inputId) {
+  const el = document.getElementById(inputId);
+  if (!el || el.dataset.rutBound) return;
+  el.dataset.rutBound = '1';
+  el.addEventListener('input', () => {
+    if (el.readOnly) return;
+    const raw = el.value.trim();
+    if (!raw) {
+      el.style.borderColor = '';
+      return;
+    }
+    const clean = normalizeChileanRut(raw);
+    if (clean.length >= 7) {
+      const isValid = validateChileanRut(clean);
+      el.style.borderColor = isValid ? '#10b981' : '#ef4444';
+      if (isValid) {
+        el.value = formatChileanRut(clean);
+      }
+    } else {
+      el.style.borderColor = '';
+    }
+  });
+}
+
+// ============================================================================
 // CONEXIÓN CON EL BACKEND NOSQL (/api/v1/nosql/*)
 // ============================================================================
 async function callNoSqlApi(endpoint, options = {}) {
+  const token = sessionStorage.getItem('redtecnica_jwt');
   for (const base of [activeApiBase, ...NOSQL_API_CANDIDATES]) {
     try {
       const controller = new AbortController();
-      const timer = setTimeout(() => controller.abort(), 3500);
+      const timer = setTimeout(() => controller.abort(), 5000);
+      const headers = {
+        'Content-Type': 'application/json',
+        ...(options.headers || {}),
+      };
+      if (token && !headers.Authorization) {
+        headers.Authorization = `Bearer ${token}`;
+      }
       const res = await fetch(`${base}${endpoint}`, {
         ...options,
-        headers: {
-          'Content-Type': 'application/json',
-          ...(options.headers || {}),
-        },
+        headers,
         signal: controller.signal,
       });
       clearTimeout(timer);
@@ -193,6 +256,14 @@ async function callNoSqlApi(endpoint, options = {}) {
         updateSyncIndicator(true);
         return await res.json();
       }
+      let errMsg = `Error ${res.status}`;
+      try {
+        const errJson = await res.json();
+        errMsg = (Array.isArray(errJson.message) ? errJson.message.join(', ') : errJson.message) || errJson.error || errMsg;
+      } catch (_) {}
+      activeApiBase = base;
+      updateSyncIndicator(true);
+      return { ok: false, status: res.status, error: errMsg };
     } catch (_) {
       // Try next candidate
     }
@@ -369,7 +440,12 @@ async function handleRegisterSubmit(event) {
   event.preventDefault();
   const fullName = document.getElementById('reg-fullName').value.trim();
   const email = document.getElementById('reg-email').value.trim().toLowerCase();
-  const documentId = document.getElementById('reg-documentId').value.trim().toUpperCase();
+  const rawDoc = document.getElementById('reg-documentId').value.trim().toUpperCase();
+  if (rawDoc && !validateChileanRut(rawDoc)) {
+    showBanner('register-status-banner', 'error', 'RUT inválido: verifica el número y dígito verificador.');
+    return;
+  }
+  const documentId = rawDoc ? formatChileanRut(rawDoc) : '';
   const phone = document.getElementById('reg-phone').value.trim();
   const address = document.getElementById('reg-address').value.trim();
   const nationality = document.getElementById('reg-nationality').value.trim() || 'Chilena';
@@ -443,6 +519,14 @@ async function handleRegisterSubmit(event) {
     body: JSON.stringify(newAccount),
   });
 
+  if (apiResponse && apiResponse.ok === false) {
+    showBanner('register-status-banner', 'error', apiResponse.error || 'No se pudo completar el registro.');
+    return;
+  }
+
+  if (apiResponse && apiResponse.accessToken) {
+    sessionStorage.setItem('redtecnica_jwt', apiResponse.accessToken);
+  }
   const savedAcc = (apiResponse && apiResponse.account) || newAccount;
   setActiveAccount(savedAcc);
   await refreshNoSqlSnapshot();
@@ -475,22 +559,15 @@ async function handleLoginSubmit(event) {
   });
 
   if (res && res.ok && res.account) {
+    if (res.accessToken) {
+      sessionStorage.setItem('redtecnica_jwt', res.accessToken);
+    }
     setActiveAccount(res.account);
     showBanner(
       'account-status-banner',
       'success',
-      `✅ Bienvenido/a ${res.account.fullName}. Tus datos están sincronizados con la App Android.`,
+      `✅ Bienvenido/a ${res.account.fullName}. Tus datos están sincronizados.`,
     );
-    switchView('account');
-    return;
-  }
-
-  // Fallback check against cached snapshot
-  const localMatch = cachedAccounts.find(
-    (a) => a.email && a.email.toLowerCase() === email && (a.passwordHash === passwordHash || a.passwordHash === password),
-  );
-  if (localMatch) {
-    setActiveAccount(localMatch);
     switchView('account');
     return;
   }
@@ -546,7 +623,9 @@ function setActiveAccount(account) {
 
 function logoutCurrentAccount() {
   currentAccount = null;
+  sessionStorage.removeItem('redtecnica_jwt');
   localStorage.removeItem('profesearch_v5_active_account');
+  localStorage.removeItem('profesearch_active_account');
   updateNavbarAndMockupUser();
   renderAccountDashboard();
 }
@@ -692,6 +771,17 @@ async function handleSaveProfileSubmit(event) {
   event.preventDefault();
   if (!currentAccount) return;
 
+  const docInput = document.getElementById('acc-documentId');
+  const rawDoc = docInput ? docInput.value.trim().toUpperCase() : '';
+  if (rawDoc && !validateChileanRut(rawDoc)) {
+    showBanner('account-status-banner', 'error', 'RUT inválido: verifica el número y dígito verificador.');
+    return;
+  }
+
+  const codeEl = document.getElementById('acc-phone-code');
+  const rawPhone = document.getElementById('acc-phone').value.trim();
+  const combinedPhone = codeEl && rawPhone && !rawPhone.startsWith('+') ? `${codeEl.value} ${rawPhone}` : rawPhone;
+
   const newAddress = document.getElementById('acc-address').value.trim();
   let coords = { latitude: currentAccount.latitude, longitude: currentAccount.longitude };
   if (newAddress !== currentAccount.address) {
@@ -699,10 +789,14 @@ async function handleSaveProfileSubmit(event) {
   }
 
   const role = document.getElementById('acc-role').value;
+  const formattedDoc = rawDoc ? formatChileanRut(rawDoc) : currentAccount.documentId || '';
   const updated = {
     ...currentAccount,
     fullName: document.getElementById('acc-fullName').value.trim(),
-    phone: document.getElementById('acc-phone').value.trim(),
+    documentId: currentAccount.documentId && String(currentAccount.documentId).trim() !== ''
+      ? currentAccount.documentId
+      : formattedDoc,
+    phone: combinedPhone,
     nationality: document.getElementById('acc-nationality').value.trim(),
     address: newAddress,
     latitude: coords.latitude,
@@ -728,13 +822,23 @@ async function handleSaveProfileSubmit(event) {
     body: JSON.stringify(updated),
   });
 
+  if (res && res.ok === false) {
+    showBanner('account-status-banner', 'error', res.error || 'No se pudo guardar el perfil.');
+    return;
+  }
+
+  if (docInput && updated.documentId) {
+    docInput.value = updated.documentId;
+    docInput.readOnly = true;
+    docInput.style.opacity = '0.75';
+  }
   setActiveAccount((res && res.account) || updated);
   await refreshNoSqlSnapshot();
   renderAccountDashboard();
   showBanner(
     'account-status-banner',
     'success',
-    '✅ Perfil y Ficha Profesional actualizados en la Base de Datos NoSQL y sincronizados con la App Android.',
+    '✅ Perfil actualizado correctamente.',
   );
 }
 
@@ -779,12 +883,18 @@ async function handleSavePaymentSubmit(event) {
 // INICIALIZACIÓN
 // ============================================================================
 window.addEventListener('DOMContentLoaded', async () => {
+  const activeJwt = sessionStorage.getItem('redtecnica_jwt');
   const savedActive = localStorage.getItem('profesearch_v5_active_account');
-  if (savedActive) {
+  if (activeJwt && savedActive) {
     try {
       currentAccount = JSON.parse(savedActive);
     } catch (_) {}
+  } else {
+    localStorage.removeItem('profesearch_v5_active_account');
+    localStorage.removeItem('profesearch_active_account');
   }
+  attachRutLiveValidation('reg-documentId');
+  attachRutLiveValidation('acc-documentId');
   updateNavbarAndMockupUser();
   initLeafletMap();
   await refreshNoSqlSnapshot();

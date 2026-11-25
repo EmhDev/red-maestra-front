@@ -227,7 +227,9 @@
   function performFullLogout() {
     sessionStorage.removeItem('redtecnica_jwt');
     try {
+      localStorage.removeItem('profesearch_v5_active_account');
       localStorage.removeItem('profesearch_active_account');
+      window.currentAccount = null;
     } catch {}
     if (auth0Client && isAuth0LoggedIn) {
       auth0Client.logout({
@@ -238,32 +240,37 @@
     }
   }
 
-  function renderRegisterSocialButtons() {
-    const regForm = document.getElementById('register-form');
-    if (!regForm || document.getElementById('register-social-box')) return;
+  function renderSocialButtonsForForm(formId, boxId) {
+    const targetForm = document.getElementById(formId);
+    if (!targetForm || document.getElementById(boxId)) return;
 
     const box = document.createElement('div');
-    box.id = 'register-social-box';
+    box.id = boxId;
     box.style.cssText = 'display: flex; flex-direction: column; gap: 10px; margin-bottom: 18px; padding-bottom: 18px; border-bottom: 1px solid rgba(148,163,184,0.25);';
     box.innerHTML = `
-      <button type="button" id="reg-google-btn" style="width:100%; padding:11px 14px; border-radius:8px; border:1px solid #cbd5e1; background:#ffffff; color:#0f172a; font-weight:600; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;">
+      <button type="button" id="${boxId}-google-btn" style="width:100%; padding:11px 14px; border-radius:8px; border:1px solid #cbd5e1; background:#ffffff; color:#0f172a; font-weight:600; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;">
         <span style="color:#db4437; font-weight:800;">G</span> Continuar con Google
       </button>
-      <button type="button" id="reg-meta-btn" style="width:100%; padding:11px 14px; border-radius:8px; border:none; background:#1877f2; color:#ffffff; font-weight:600; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;">
+      <button type="button" id="${boxId}-meta-btn" style="width:100%; padding:11px 14px; border-radius:8px; border:none; background:#1877f2; color:#ffffff; font-weight:600; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;">
         <span>f</span> Continuar con Meta
       </button>
-      <button type="button" id="reg-auth0-btn" style="width:100%; padding:11px 14px; border-radius:8px; border:none; background:#312e81; color:#ffffff; font-weight:600; cursor:pointer;">
+      <button type="button" id="${boxId}-auth0-btn" style="width:100%; padding:11px 14px; border-radius:8px; border:none; background:#312e81; color:#ffffff; font-weight:600; cursor:pointer;">
         Iniciar Sesión / Registrarse con Correo
       </button>
     `;
-    regForm.parentNode.insertBefore(box, regForm);
+    targetForm.parentNode.insertBefore(box, targetForm);
 
-    document.getElementById('reg-google-btn').onclick = () =>
+    document.getElementById(`${boxId}-google-btn`).onclick = () =>
       auth0Client.loginWithRedirect({ authorizationParams: { connection: 'google-oauth2' } });
-    document.getElementById('reg-meta-btn').onclick = () =>
+    document.getElementById(`${boxId}-meta-btn`).onclick = () =>
       auth0Client.loginWithRedirect({ authorizationParams: { connection: 'facebook' } });
-    document.getElementById('reg-auth0-btn').onclick = () =>
+    document.getElementById(`${boxId}-auth0-btn`).onclick = () =>
       auth0Client.loginWithRedirect();
+  }
+
+  function renderRegisterSocialButtons() {
+    renderSocialButtonsForForm('register-form', 'register-social-box');
+    renderSocialButtonsForForm('login-form', 'login-social-box');
   }
 
   function guardNavigationWhenLoggedIn() {
