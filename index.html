@@ -48,24 +48,43 @@
     <!-- =================================================================== -->
     <section id="view-home" class="view-section active">
       <!-- CARRUSEL DE PROFESIONALES -->
-      <div class="rm-carousel" id="rm-carousel" style="margin-bottom: 24px; border-radius: 18px; overflow: hidden; position: relative; height: 300px; box-shadow: 0 12px 32px rgba(15,23,42,0.12);">
-        <div class="rm-slide active" style="position:absolute; inset:0; background: linear-gradient(90deg, rgba(15,23,42,0.82) 0%, rgba(15,23,42,0.35) 100%), url('https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1400&q=80') center/cover; display:flex; align-items:center; padding: 36px; color:#fff;">
-          <div style="max-width: 540px;">
-            <h2 style="font-size: 1.9rem; font-weight: 800; margin: 0 0 10px 0;">Conecta con profesionales felices y verificados</h2>
-            <p style="margin: 0; font-size: 1rem; opacity: 0.92;">Encuentra especialistas cerca de ti en segundos con RedTecnica.</p>
+      <div class="rm-carousel" id="rm-carousel">
+        <div class="rm-slide active" style="background: linear-gradient(90deg, rgba(15,23,42,0.84) 0%, rgba(15,23,42,0.38) 100%), url('https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1400&q=80') center/cover;">
+          <div class="rm-slide-content">
+            <h2>Conecta con profesionales confiables y verificados</h2>
+            <p>Encuentra gasfíteres, electricistas, maestros y jardineros en Viña del Mar, Santiago y todo Chile.</p>
           </div>
         </div>
-        <div class="rm-slide" style="position:absolute; inset:0; background: linear-gradient(90deg, rgba(15,23,42,0.82) 0%, rgba(15,23,42,0.35) 100%), url('https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=1400&q=80') center/cover; display:none; align-items:center; padding: 36px; color:#fff;">
-          <div style="max-width: 540px;">
-            <h2 style="font-size: 1.9rem; font-weight: 800; margin: 0 0 10px 0;">Impulsa tu carrera independiente</h2>
-            <p style="margin: 0; font-size: 1rem; opacity: 0.92;">Publica tus servicios, gestiona clientes y recibe pagos seguros.</p>
+        <div class="rm-slide" style="background: linear-gradient(90deg, rgba(15,23,42,0.84) 0%, rgba(15,23,42,0.38) 100%), url('https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=1400&q=80') center/cover;">
+          <div class="rm-slide-content">
+            <h2>Impulsa tu carrera independiente</h2>
+            <p>Publica tus servicios, gestiona clientes y recibe pagos seguros.</p>
           </div>
         </div>
-        <div class="rm-slide" style="position:absolute; inset:0; background: linear-gradient(90deg, rgba(15,23,42,0.82) 0%, rgba(15,23,42,0.35) 100%), url('https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&w=1400&q=80') center/cover; display:none; align-items:center; padding: 36px; color:#fff;">
-          <div style="max-width: 540px;">
-            <h2 style="font-size: 1.9rem; font-weight: 800; margin: 0 0 10px 0;">Calidad garantizada en cada servicio</h2>
-            <p style="margin: 0; font-size: 1rem; opacity: 0.92;">Reseñas reales, geolocalización en vivo y soporte directo.</p>
+        <div class="rm-slide" style="background: linear-gradient(90deg, rgba(15,23,42,0.84) 0%, rgba(15,23,42,0.38) 100%), url('https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&w=1400&q=80') center/cover;">
+          <div class="rm-slide-content">
+            <h2>Calidad garantizada en cada servicio</h2>
+            <p>Reseñas reales, cobertura local y soporte directo.</p>
           </div>
+        </div>
+      </div>
+
+      <!-- BUSCADOR PRINCIPAL Y RUBROS VISIBLES -->
+      <div class="rm-search-section">
+        <form class="rm-search-form" onsubmit="handleHeroSearch(event)">
+          <input type="text" id="search-what" class="rm-search-input" placeholder="¿Qué necesitas? (Ej: Gasfíter, Electricista, Maestro)" />
+          <input type="text" id="search-where" class="rm-search-input" placeholder="¿Dónde? (Ej: Viña del Mar, Providencia, Las Condes)" />
+          <button type="submit" class="rm-search-btn">Buscar</button>
+        </form>
+        <div class="rm-rubros-row">
+          <button type="button" class="rm-rubro-chip" data-rubro="Gasfíter" onclick="selectRubroChip('Gasfíter')">🔧 Gasfíter</button>
+          <button type="button" class="rm-rubro-chip" data-rubro="Electricista" onclick="selectRubroChip('Electricista')">⚡ Electricista</button>
+          <button type="button" class="rm-rubro-chip" data-rubro="Maestro" onclick="selectRubroChip('Maestro')">🛠️ Maestro</button>
+          <button type="button" class="rm-rubro-chip" data-rubro="Jardinero" onclick="selectRubroChip('Jardinero')">🌿 Jardinero</button>
+          <button type="button" class="rm-rubro-chip" data-rubro="Climatización" onclick="selectRubroChip('Climatización')">❄️ Climatización</button>
+          <button type="button" class="rm-rubro-chip" data-rubro="Pintor" onclick="selectRubroChip('Pintor')">🎨 Pintor</button>
+          <button type="button" class="rm-rubro-chip" data-rubro="Cerrajero" onclick="selectRubroChip('Cerrajero')">🔑 Cerrajero</button>
+          <button type="button" class="rm-rubro-chip active" data-rubro="Todos" onclick="selectRubroChip('Todos')">Todos</button>
         </div>
       </div>
 
@@ -75,31 +94,17 @@
             Encuentra o publica servicios profesionales con <span>Geolocalización Real y Pago Seguro</span>
           </h1>
           <p class="hero-subtitle">
-            Crea tu cuenta aquí en la Web o en la aplicación Android <strong>RedTecnica v5</strong>.
-            Tu perfil, ficha profesional, dirección en el mapa y medio de pago (<strong>Crédito o Débito</strong>)
-            quedan guardados en la Base de Datos NoSQL compartida para acceder desde cualquier dispositivo.
+            Tu cuenta funciona en la web y en el celular. Encuentra especialistas en Viña del Mar, Santiago y tu comuna, o publica tus servicios con respaldo verificado.
           </p>
-
-          <div class="hero-cta-group">
-            <button class="btn btn-primary" onclick="switchView('register')">
-              ✨ Crear Cuenta Ahora (Sincronizada con App)
-            </button>
-            <button class="btn btn-outline" onclick="switchView('account')">
-              💳 Configurar Mi Cuenta y Pago
-            </button>
-            <a href="/download/RedTecnica_v5-demo.apk" class="btn btn-gold">
-              📥 Descargar RedTecnica_v5-demo.apk
-            </a>
-          </div>
 
           <div class="hero-stats">
             <div class="stat-box">
               <div class="stat-value" id="stat-total-pros">3+</div>
-              <div class="stat-label">Profesionales en BD NoSQL</div>
+              <div class="stat-label">Profesionales verificados</div>
             </div>
             <div class="stat-box">
               <div class="stat-value">100%</div>
-              <div class="stat-label">Sincronizado Web + Android</div>
+              <div class="stat-label">Web y Celular</div>
             </div>
             <div class="stat-box">
               <div class="stat-value">4% - 15%</div>
@@ -113,17 +118,17 @@
           <div class="phone-header">
             <div>
               <div style="font-weight: 800; font-size: 1.05rem;">RedTecnica App</div>
-              <div style="font-size: 0.75rem; color: #DBEAFE;">Geolocalización en vivo • Profesionales Verificados</div>
+              <div style="font-size: 0.75rem; color: #DBEAFE;">Cobertura local • Profesionales Verificados</div>
             </div>
             <span class="tier-badge tier-ELITE">ACTIVO</span>
           </div>
 
           <div class="phone-card">
             <div style="font-size: 0.75rem; color: #FBBF24; font-weight: 800; margin-bottom: 4px;">
-              MISMA CUENTA EN WEB Y MÓVIL
+              TU CUENTA EN WEB Y CELULAR
             </div>
             <div style="font-size: 0.86rem; color: #E2E8F0;">
-              Crea tu cuenta en RedTecnica y accede desde cualquier dispositivo con tu perfil y ubicación sincronizados en tiempo real.
+              Tu cuenta funciona en la web y en el celular. Accede a tus solicitudes y perfil desde cualquier dispositivo en Viña del Mar, Santiago y otras comunas.
             </div>
           </div>
 
@@ -143,12 +148,12 @@
       </div>
 
       <!-- PROFESIONALES CERCA DE TI (SIN ZOOM ACCIDENTAL AL SCROLLEAR) -->
-      <div class="section-card">
+      <div class="section-card" id="professionals-results-section">
         <div class="section-header">
           <div>
             <h2 class="section-title">Profesionales calificados cerca de ti, desde tu celular</h2>
             <p class="section-subtitle">
-              Encuentra especialistas verificados en tu comuna en segundos, revisa sus evaluaciones y coordina directamente desde la web o la app móvil.
+              Encuentra especialistas verificados en Viña del Mar, Providencia, Las Condes, Ñuñoa y tu comuna en segundos, revisa sus evaluaciones y coordina directamente desde la web o la app móvil.
             </p>
           </div>
           <div style="display: flex; gap: 10px;">
@@ -165,8 +170,11 @@
             </p>
           </div>
           <div id="live-osm-map" style="display: none;"></div>
-          <div class="pro-list-container" id="live-pro-list">
-            <!-- Renderizado dinámicamente -->
+          <div>
+            <div id="search-results-meta" style="font-size: 0.85rem; margin-bottom: 10px; opacity: 0.85;"></div>
+            <div class="pro-list-container" id="live-pro-list">
+              <!-- Renderizado dinámicamente -->
+            </div>
           </div>
         </div>
       </div>
@@ -248,7 +256,7 @@
                 <span class="role-icon">🛠️</span>
                 <div>
                   <div class="role-title">Soy un Profesional</div>
-                  <div class="role-desc">Para técnicos y profesores que quieren publicar su ficha.</div>
+                  <div class="role-desc">Para profesionales que quieren publicar su ficha.</div>
                 </div>
               </div>
               <div class="role-check">✓</div>
@@ -479,7 +487,7 @@
 
           <p style="color: #94A3B8; font-size: 0.9rem; margin-bottom: 18px;">
             Valida tu identidad ingresando tu <strong>Correo Electrónico</strong> y el <strong>RUT o DNI Oficial</strong>
-            registrado en tu cuenta. La nueva contraseña se actualizará de inmediato en la Base de Datos NoSQL para Web y Android.
+            registrado en tu cuenta. La nueva contraseña se actualizará de inmediato para que puedas volver a ingresar desde la web o el celular.
           </p>
 
           <form onsubmit="handleRecoverSubmit(event)">

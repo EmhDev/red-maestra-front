@@ -279,11 +279,11 @@ function updateSyncIndicator(online) {
   if (online) {
     pill.style.background = 'rgba(16, 185, 129, 0.14)';
     pill.style.color = '#34D399';
-    text.textContent = 'NoSQL DB Sincronizada (Web ↔ Android)';
+    text.textContent = 'Conectado y sincronizado';
   } else {
     pill.style.background = 'rgba(251, 191, 36, 0.16)';
     pill.style.color = '#FBBF24';
-    text.textContent = 'Modo Local (Esperando Backend :3000)';
+    text.textContent = 'Modo sin conexión';
   }
 }
 
@@ -312,22 +312,108 @@ function initLeafletMap() {
     leafletMap = L.map('live-osm-map').setView([-33.4372, -70.6306], 12);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
-      attribution: '© OpenStreetMap contributors • ProfeSearch v5 NoSQL',
+      attribution: '© OpenStreetMap contributors • RedTecnica',
     }).addTo(leafletMap);
   }
   renderProfessionalsMapAndList();
 }
 
+let activeSearchWhat = '';
+let activeSearchWhere = '';
+
+function normalizeSearchText(str) {
+  return String(str || '')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .trim();
+}
+
+function handleHeroSearch(event) {
+  event.preventDefault();
+  const whatEl = document.getElementById('search-what');
+  const whereEl = document.getElementById('search-where');
+  activeSearchWhat = whatEl ? whatEl.value.trim() : '';
+  activeSearchWhere = whereEl ? whereEl.value.trim() : '';
+
+  document.querySelectorAll('.rm-rubro-chip').forEach((chip) => {
+    const rubro = chip.getAttribute('data-rubro') || '';
+    const isMatch =
+      (!activeSearchWhat && rubro === 'Todos') ||
+      (activeSearchWhat && normalizeSearchText(rubro) === normalizeSearchText(activeSearchWhat));
+    chip.classList.toggle('active', isMatch);
+  });
+
+  renderProfessionalsMapAndList();
+  const target = document.getElementById('professionals-results-section');
+  if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function selectRubroChip(rubro) {
+  const whatEl = document.getElementById('search-what');
+  const whereEl = document.getElementById('search-where');
+  activeSearchWhat = rubro === 'Todos' ? '' : rubro;
+  activeSearchWhere = whereEl ? whereEl.value.trim() : '';
+  if (whatEl) whatEl.value = activeSearchWhat;
+
+  document.querySelectorAll('.rm-rubro-chip').forEach((chip) => {
+    chip.classList.toggle('active', chip.getAttribute('data-rubro') === rubro);
+  });
+
+  renderProfessionalsMapAndList();
+  const target = document.getElementById('professionals-results-section');
+  if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
 function renderProfessionalsMapAndList() {
-  const pros = cachedAccounts.filter((a) => a.role === 'professional');
+  const allPros = cachedAccounts.filter((a) => a.role === 'professional');
   const statEl = document.getElementById('stat-total-pros');
-  if (statEl) statEl.textContent = `${pros.length}`;
+  if (statEl) statEl.textContent = `${allPros.length}`;
+
+  const qWhat = normalizeSearchText(activeSearchWhat);
+  const qWhere = normalizeSearchText(activeSearchWhere);
+
+  const pros = allPros.filter((pro) => {
+    const searchableWhat = normalizeSearchText(
+      [
+        pro.profession,
+        pro.fullName,
+        pro.bio,
+        Array.isArray(pro.skills) ? pro.skills.join(' ') : '',
+      ].join(' '),
+    );
+    const searchableWhere = normalizeSearchText(pro.address || '');
+    const matchWhat = !qWhat || searchableWhat.includes(qWhat);
+    const matchWhere = !qWhere || searchableWhere.includes(qWhere);
+    return matchWhat && matchWhere;
+  });
+
+  const metaEl = document.getElementById('search-results-meta');
+  if (metaEl) {
+    if (qWhat || qWhere) {
+      const parts = [];
+      if (activeSearchWhat) parts.push(`rubro "${activeSearchWhat}"`);
+      if (activeSearchWhere) parts.push(`ubicación "${activeSearchWhere}"`);
+      metaEl.textContent = `Mostrando ${pros.length} resultado(s) para ${parts.join(' en ')}`;
+    } else {
+      metaEl.textContent = '';
+    }
+  }
 
   const listEl = document.getElementById('live-pro-list');
   if (listEl) {
-    listEl.innerHTML = pros
-      .map(
-        (pro) => `
+    if (pros.length === 0) {
+      listEl.innerHTML = `
+        <div class="pro-item-card" style="text-align: center; padding: 28px 18px;">
+          <div style="font-weight: 800; font-size: 1rem; margin-bottom: 6px;">No encontramos profesionales con ese filtro</div>
+          <div style="font-size: 0.86rem; opacity: 0.8; margin-bottom: 14px;">Prueba otro rubro o comuna (ej. Viña del Mar, Providencia, Las Condes).</div>
+          <button type="button" class="btn btn-outline" onclick="selectRubroChip('Todos')">Ver todos los profesionales</button>
+        </div>
+      `;
+    } else {
+      listEl.innerHTML = pros
+        .map(
+          (pro) => `
       <div class="pro-item-card" onclick="focusProfessionalOnMap(${pro.latitude || -33.4489}, ${pro.longitude || -70.6693})">
         <div class="pro-item-top">
           <div>
@@ -337,7 +423,7 @@ function renderProfessionalsMapAndList() {
           <span class="tier-badge tier-${pro.tier || 'PRO'}">${pro.tier || 'PRO'}</span>
         </div>
         <div style="font-size: 0.82rem; color: #94A3B8; margin-bottom: 6px;">
-          📍 ${pro.address || 'Santiago, Chile'}
+          📍 ${pro.address || 'Viña del Mar / Santiago, Chile'}
         </div>
         <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.82rem; border-top: 1px solid #1E293B; padding-top: 6px;">
           <span style="color: #FBBF24; font-weight: 700;">⭐ ${pro.rating || 5.0} (${pro.reviewsCount || 1} reseñas)</span>
@@ -345,8 +431,9 @@ function renderProfessionalsMapAndList() {
         </div>
       </div>
     `,
-      )
-      .join('');
+        )
+        .join('');
+    }
   }
 
   if (leafletMap && typeof L !== 'undefined') {
@@ -458,7 +545,7 @@ async function handleRegisterSubmit(event) {
   const { masked, last4 } = maskCardNumber(rawCardNumber);
   const cardBrand = detectCardBrand(rawCardNumber, currentRegPayType);
 
-  showBanner('register-status-banner', 'success', '⏳ Geocodificando dirección y guardando cuenta en la Base de Datos NoSQL...');
+  showBanner('register-status-banner', 'success', '⏳ Guardando tu cuenta...');
 
   const coords = await geocodeAddress(address);
   const passwordHash = sha256Hex(password.trim());
@@ -534,7 +621,7 @@ async function handleRegisterSubmit(event) {
   showBanner(
     'account-status-banner',
     'success',
-    `✅ ¡Cuenta creada y sincronizada en la Base de Datos NoSQL! Ya puedes iniciar sesión en la App Android con ${savedAcc.email}.`,
+    `✅ ¡Cuenta creada! Tu cuenta funciona en la web y en el celular con ${savedAcc.email}.`,
   );
   switchView('account');
 }
@@ -597,7 +684,7 @@ async function handleRecoverSubmit(event) {
     showBanner(
       'recover-status-banner',
       'success',
-      '✅ Contraseña actualizada en la Base de Datos NoSQL. Ya puedes iniciar sesión aquí y en la App Android.',
+      '✅ Contraseña actualizada. Tu cuenta funciona en la web y en el celular.',
     );
     if (res.account) {
       setActiveAccount(res.account);
@@ -640,7 +727,7 @@ async function refreshCurrentAccountFromCloud() {
     showBanner(
       'account-status-banner',
       'success',
-      '🔄 Datos sincronizados desde la Base de Datos NoSQL compartida con Android.',
+      '🔄 Datos actualizados correctamente.',
     );
   }
 }
@@ -875,7 +962,7 @@ async function handleSavePaymentSubmit(event) {
   showBanner(
     'account-status-banner',
     'success',
-    `💳 Medio de pago (${currentAccPayType} ${brand} •••• ${last4} - ${bank}) guardado en la Base de Datos NoSQL y disponible en la App Android.`,
+    `💳 Medio de pago (${currentAccPayType} ${brand} •••• ${last4} - ${bank}) guardado correctamente.`,
   );
 }
 
